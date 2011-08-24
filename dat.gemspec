@@ -9,15 +9,10 @@ Gem::Specification.new do |s|
   s.authors     = ["Kirk Scheibelhut"]
   s.email       = ["kjs@scheibo.com"]
   s.homepage    = "https://github.com/scheibo/dat"
-  s.summary     = "Dat app"
+  s.summary     = "Word game which deals with altering words adding, deleting or replacing letters."
   s.description = s.summary
 
   s.rubyforge_project = "dat"
-
-  #s.add_dependency "algorithms"
-
-  # s.rdoc_options = ["--line-numbers", "--inline-source", "--title", "Dat", "--main", "Dat"] # from rtomayko
-  # s.extra_rdoc_files = %w[README.md LICENSE]
 
   s.add_development_dependency "rake"
   s.add_development_dependency "bundler", "~> 1.0.0"
