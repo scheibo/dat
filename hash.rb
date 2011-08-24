@@ -1,8 +1,44 @@
 #!/usr/bin/env ruby
 
 require 'set'
+require 'pp'
 
-dict = {}
+$dict = {}
+
+class Word
+  attr_accessor :definition
+  alias defn definition
+  alias defn= definition=
+
+  def initialize(word, defn)
+    @word = word
+    @definition = defn
+    @relatives = Set.new
+  end
+
+  def add_relative(word)
+    @relatives.add(word) if word != @word
+  end
+
+  def relatives
+    @relatives.clone
+  end
+end
+=begin
+def make_word(word, defn)
+  if !$dict[word]
+    $dict[word] = Word.new(word, defn)
+  else
+    $dict[word].definition = defn
+  end
+end
+
+def relatives(w1, w2, defn)
+  make_word(w1, defn)
+  make_word(w2, defn)
+  $dict[w1].add_relative(w2)
+  $dict[w2].add_relative(w1)
+end
 
 ARGF.each_line do |line|
 
@@ -19,30 +55,25 @@ ARGF.each_line do |line|
     suffixes = $~[1].split(",").map(&:strip).map {|w| w.delete "-" }
 
     # determine if we are a suffix, kind of rough but good enough
+    us = nil
     suffixes.each do |suf|
-      us ||= word.end_with?(suf)
+      us = suf if word.end_with?(suf)
     end
 
     # determine the root word - if we are a suffix then we need to calculate it
     if us
-      root = word[0,word.size-suf.size]
+      root = word[0,word.size-us.size]
     else
       root = word
     end
 
-    # create the hash entry
-    dict[word] = Word.new(defn)
-
     # add relatives to the hash entry
     suffixes.each do |suf|
-      dict[word].add_relative("#{root}#{suf}")
+      w = "#{root}#{suf}"
+      relatives(w, word, defn)
+      relatives(w, root, defn)
+      relatives(root, word, defn)
     end
-
-    if !dict[root]
-      dict[root] = Word.new(defn)
-    end
-
-    dict[root].add_relative(word)
 
     next # anything with a suffix match doesn't have a cap match?
   end
@@ -56,31 +87,19 @@ ARGF.each_line do |line|
     dfn = dfn[idx+$~.to_s.size..dfn.size]
   end
 
-  # if any of the cap words match then we are a cap word ourselves
-  matches.each do |w|
-    us ||= w == word
+  matches.each do |m1|
+    matches.each do |m2|
+      relatives(m1, m2, defn)
+    end
+    relatives(m1, word, defn)
   end
-
-  if !us
-    root =
 
 end
+dump = Marshal.dump $dict
+File.open('dumped.dict', 'w').write dump
+=end
 
-class Word
-  attr_reader definition, root
+dict = Marshal.load(File.open('dict.dat').read)
 
-  def initialize(defn)
-    @definition = defn
-    @relatives = Set.new
-  end
+pp dict
 
-  def add_relative(word)
-    @relatives.add(word)
-  end
-
-  def relatives
-    @relatives.clone
-  end
-
-  alias defn definition
-end

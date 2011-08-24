@@ -1,2 +1,15 @@
-full load of dict from file:
+full load of dict from file: (need to parse and create into structure)
+real  0m6.029s
+user  0m5.938s
+sys 0m0.093s
+
+127MB
+
+
 load from marshalled object:
+
+real  0m1.447s
+user  0m1.345s
+sys 0m0.101s
+
+190MB
