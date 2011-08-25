@@ -1,4 +1,10 @@
 #!/usr/bin/env ruby
-$:.unshift(File.expand_path('../lib', __FILE__)) unless $:.include?(File.expand_path('../lib', __FILE__))
+$:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expand_path('../../lib', __FILE__))
 
 require 'dat'
+include Dat
+
+d = Dict.new
+
+p d['BAT']
+p d['CAT']
