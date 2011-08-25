@@ -18,6 +18,7 @@ ARGF.each_line do |line|
   end
 end
 
+# dump the new dictionary
 dict.each do |k,v|
   puts "#{k} #{v}"
 end
