@@ -13,6 +13,12 @@ module Dat
       @dict[word]
     end
 
+    def each
+      @dict.each do |k,v|
+        yield k,v
+      end
+    end
+
     def to_s
       # TODO sloppy, builds up a lot of memory - better way?
       result = ""
