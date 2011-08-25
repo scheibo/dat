@@ -5,6 +5,5 @@ require 'dat'
 include Dat
 
 d = Dict.new
+p d
 
-p d['BAT']
-p d['CAT']

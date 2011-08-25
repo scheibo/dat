@@ -13,6 +13,15 @@ module Dat
       @dict[word]
     end
 
+    def to_s
+      # TODO sloppy, builds up a lot of memory - better way?
+      result = ""
+      @dict.each do |k,v|
+        result << "#{k} #{v.defn}\n"
+      end
+      result
+    end
+
     private
 
     def fill
