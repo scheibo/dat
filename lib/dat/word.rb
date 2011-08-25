@@ -5,6 +5,7 @@ module Dat
     attr_reader :word
     attr_accessor :definition
     alias defn definition
+    alias defn= definition=
 
     def initialize(word, defn)
       @word = word

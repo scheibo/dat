@@ -6,7 +6,7 @@ module Dat
     def initialize
       # The internal hash which maps string words to Dat::Word objects
       @dict = {}
-      fill
+      fill!
     end
 
     def [](word)
@@ -24,7 +24,7 @@ module Dat
 
     private
 
-    def fill
+    def fill!
       File.open(File.expand_path('../../../data/dict', __FILE__)) do |f|
         f.each_line do |line|
           space = line.index " "
