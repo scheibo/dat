@@ -6,14 +6,12 @@ module Dat
       size = word.size
       result = []
       if opt[:add]
-        puts "in add"
         (0..size).each do |i|
           result << try_letters(word[0,i], word[i,size], word,  dict)
         end
       end
 
       if opt[:replace]
-        puts "in replace"
         (0...size).each do |i|
           result << try_letters(word[0,i], word[i+1,size], word, dict)
         end
@@ -33,13 +31,9 @@ module Dat
 
     private
 
-    # TODO broken - dat only returns at and da. rerun script to determine
-    # relative reachables.
-
     def self.try_letters(start, finish, word, dict)
-      puts "in try letters"
       result = []
-      ('a'..'z').each do |c|
+      ('A'..'Z').each do |c|
         w = "#{start}#{c}#{finish}"
         if dict[w] && w != word
           result << w
