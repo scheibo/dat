@@ -1,3 +1,0 @@
-#!/bin/bash
-
-cat expanded_* | tr -d "\r" | sort -u

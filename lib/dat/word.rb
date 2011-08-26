@@ -7,14 +7,14 @@ module Dat
     alias defn definition
     alias defn= definition=
 
-    def initialize(word, defn)
+    def initialize(word, defn=" ")
       @word = word
       @definition = defn
       @relatives = Set.new
     end
 
     def add_relative(word)
-      @relatives.add word if word.word != @word.word
+      @relatives.add word if word.word != @word and word.word[0] == @word[0]
     end
 
     def relatives
@@ -22,17 +22,30 @@ module Dat
     end
 
     def to_s
+      @word
+    end
+
+    def to_dict_entry
       str = @word.clone
-      str << "(#{@type})" if @type
+      str << " (#{@type})" if @type
+      str << " " unless @definition == " "
       str << @definition
-      str << "[#{@relatives.join(" ")}]"
+      str << " " unless @definition.end_with? " "
+      str << "[#{@relatives.to_a.join(" ")}]"
     end
 
     # Helper to declare that two words come from the same root
     def self.relatives(*words)
-      words.permutation(2).each do |pair|
-        pair[0].add_relative(pair[1].word)
-        pair[1].add_relative(pair[0].word)
+      # make a set of all the relatives
+      relatives = Set.new
+      words.each do |word|
+        word.relatives.each { |rs| relatives.add(rs) }
+        relatives.add(word)
+      end
+
+      # update words to include the full list of relatives
+      words.each do |word|
+        relatives.each { |r| word.add_relative(r) }
       end
     end
   end
