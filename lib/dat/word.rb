@@ -18,7 +18,7 @@ module Dat
     end
 
     def relatives
-      @relatives.clone
+      @relatives #.clone
     end
 
     # Helper to declare that two words come from the same root

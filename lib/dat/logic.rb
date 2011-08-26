@@ -1,6 +1,6 @@
 module Dat
   class Logic
-    def perturb(word, dict, opt={})
+    def self.perturb(word, dict, opt={})
       min_size = opt[:min_size]
       opt.default = true
       size = word.size
@@ -31,7 +31,7 @@ module Dat
 
     private
 
-    def try_letters(start, finish, word, dict)
+    def self.try_letters(start, finish, word, dict)
       result = []
       ('a'..'z').each do |c|
         w = "#{start}#{c}#{finish}"

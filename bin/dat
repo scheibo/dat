@@ -5,6 +5,9 @@ require 'dat'
 include Dat
 
 d = Dict.new
-d.each do |k,v|
-  puts "#{k} #{v.defn}"
-end
+#d.each do |k,v|
+#  results = Logic.perturb(k, d)
+#  if !v.relatives.empty? && v.relatives.difference(results).empty?
+#    p k
+#  end
+#end
