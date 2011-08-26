@@ -28,9 +28,7 @@ module Dat
 
     def to_s
       result = ""
-      @dict.each do |k,v|
-        result << "#{k} #{v.defn}\n"
-      end
+      @dict.each { |k,v| results << v.to_s }
       result
     end
 
@@ -39,7 +37,6 @@ module Dat
     def fill!
       File.open(File.expand_path('../../../data/dict', __FILE__)) do |f|
         f.each_line do |line|
-          line.chomp
           space, brace = line.index " ", line.index "["
           word, defn, rels = line[0...space], line[space...brace], line[brace+1...line.size-1].chomp.split " "
           Word.relatives(*(rels.map {|r| get(r, defn)}), get(word, defn))
