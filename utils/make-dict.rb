@@ -5,7 +5,7 @@ ARGF.each_line do |line|
   space = line.index " "
   word, defn = line[0...space], line[space+1..line.size].chomp
   if defn == "!!!!!" and dict[word].nil?
-    dict[word] = ""
+    dict[word] = " "
   else
     if !dict[word]
       dict[word] = defn

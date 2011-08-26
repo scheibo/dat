@@ -1,4 +1,4 @@
-
+#!/usr/bin/env ruby
     def fill!
       File.open(File.expand_path('../../../data/dict', __FILE__)) do |f|
         f.each_line do |line|
