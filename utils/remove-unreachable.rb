@@ -11,7 +11,7 @@ ARGF.each_line do |line|
   dictionary[word.downcase] = defn
 end
 
-File.open('unreachable').each_line do |line|
+File.open('relative').each_line do |line|
   word = line.chomp
   dictionary.delete(word)
 end
