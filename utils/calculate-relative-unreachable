@@ -1,0 +1,20 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+include Dat
+
+def relative_unreachable(infile, outfile)
+  dict = Dict.new(infile)
+
+  dict.each do |k,v|
+    results = Logic.perturb(k, dict)
+    if v.relatives.union(results).difference(v.relatives).empty?
+      dict.delete(v)
+    end
+  end
+
+  File.open(outfile, 'w').puts dict
+end
+
+
+relative_unreachable 'nounreachable.txt', '../data/norelativereachable.txt'

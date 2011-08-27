@@ -1,6 +1,0 @@
-make boggle use good dictionary
-make us parse types
-propogate types
-deal with bogus words *need to rerun after search
-search for bogus words (no vowels...)
-generalize utils to use paths

@@ -1,0 +1,6 @@
+#!/bin/bash
+./transform
+./calculate-unreachable
+./calculate-relative-unreachable
+./dump
+./sortdicts

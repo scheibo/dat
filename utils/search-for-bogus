@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+
+def print_bogus(infile, outfile)
+  d = Dat::Dict.new(infile)
+
+  words = []
+  d.each do |k,v|
+    if k !~ /[AEIOUY]/ # no vowels
+      words << k
+    end
+  end
+
+  File.open(outfile, 'w') do |f|
+    words.each do |w|
+      f.puts "d #{w}"
+    end
+  end
+end
+
+print_bogus 'all.txt', 'possible-bogus'

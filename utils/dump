@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+require 'FileUtils'
+include FileUtils
+
+def dump(infile, outfile)
+  d = Dat::Dict.new(infile)
+  File.open(outfile, 'w').puts d
+end
+
+dump 'all.txt', 'temp'
+mv 'temp', '../data/all.txt'
+
+dump 'nounreachable.txt', 'temp'
+mv 'temp', '../data/nounreachable.txt'
+
+dump 'norelativereachable.txt', 'temp'
+mv 'temp', '../data/norelativereachable.txt'

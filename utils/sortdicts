@@ -1,0 +1,11 @@
+#!/bin/bash
+
+[[ -f '../data/all.txt' ]] && sort ../data/all.txt > ../data/all2.txt && mv ../data/all2.txt ../data/all.txt
+[[ -f '../data/nounreachable.txt' ]] && sort ../data/nounreachable.txt > ../data/nu.txt && mv ../data/nu.txt ../data/nounreachable.txt
+[[ -f '../data/norelativereachable.txt' ]] && sort ../data/norelativereachable.txt > ../data/nrr.txt && mv ../data/nrr.txt ../data/norelativereachable.txt
+
+sort '../data/individuals/Tcws.txt' > '../data/individuals/sTcws.txt'
+sort '../data/individuals/Tospd4.txt' > '../data/individuals/sTospd4.txt'
+sort '../data/individuals/Toswi.txt' > '../data/individuals/sToswi.txt'
+sort '../data/individuals/Towl.txt' > '../data/individuals/sTowl.txt'
+sort '../data/individuals/Towl2.txt' > '../data/individuals/sTowl2.txt'

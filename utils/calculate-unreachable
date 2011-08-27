@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+include Dat
+
+def unreachable(infile, outfile)
+  dict = Dict.new(infile)
+
+  dict.each do |k,v|
+    results = Logic.perturb(k, dict)
+    if results.empty?
+      dict.delete(v)
+    end
+  end
+
+  File.open(outfile, 'w').puts dict
+end
+
+unreachable 'all.txt', '../data/nounreachable.txt'
