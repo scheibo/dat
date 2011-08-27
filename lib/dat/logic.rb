@@ -19,9 +19,9 @@ module Dat
 
       if opt[:delete]
         (0...size).each do |i|
-          w = "#{word[0,i]}#{word[i+1,size]}"
+          w = "#{word[0,i]}#{word[i+1,size]}".upcase
           if dict[w] && (!min_size || w.size >= min_size)
-            result << w
+            result << dict[w]
           end
         end
       end
@@ -34,9 +34,9 @@ module Dat
     def self.try_letters(start, finish, word, dict)
       result = []
       ('A'..'Z').each do |c|
-        w = "#{start}#{c}#{finish}"
-        if dict[w] && w != word
-          result << w
+        w = "#{start}#{c}#{finish}".upcase
+        if dict[w] && w != word.upcase
+          result << dict[w]
         end
       end
       result

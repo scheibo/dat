@@ -21,7 +21,7 @@ module Dat
 
     def delete(word)
       word.relatives.each do |r|
-        @dict[r].relatives.delete word.word
+        r.relatives.delete word
       end
       @dict.delete word.word
     end
@@ -39,7 +39,7 @@ module Dat
         f.each_line do |line|
           line.chomp!
           space, brace = line.index(" "), line.index("[")
-          word, defn, rels = line[0...space], line[space...brace], line[brace+1...line.size-1].split(" ")
+          word, defn, rels = line[0...space], line[space...brace].strip, line[brace+1...line.size-1].split(" ")
           Word.relatives(*(rels.map {|r| get(r, defn)}), get(word, defn))
         end
       end
@@ -48,6 +48,5 @@ module Dat
     def get(word, defn)
       @dict[word] ||= Word.new(word, defn)
     end
-
   end
 end

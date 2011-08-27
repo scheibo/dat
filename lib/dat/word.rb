@@ -27,10 +27,8 @@ module Dat
 
     def to_dict_entry
       str = @word.clone
-      str << " (#{@type})" if @type
-      str << " " unless @definition == " "
-      str << @definition
-      str << " " unless @definition.end_with? " "
+      str << (@type ? " (" << @type << ") " : " ")
+      str << @definition << " " unless @definition.strip.empty?
       str << "[#{@relatives.to_a.join(" ")}]"
     end
 
