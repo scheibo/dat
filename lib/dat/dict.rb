@@ -7,6 +7,7 @@ module Dat
       # The internal hash which maps string words to Dat::Word objects
       @dict = {}
       fill!
+      clean!
     end
 
     def [](word)
@@ -38,15 +39,26 @@ module Dat
       File.open(File.expand_path('../../../data/dict', __FILE__)) do |f|
         f.each_line do |line|
           line.chomp!
+          #space, paren, brace = line.index(" "), line.index(/(\(.*\))/), line.index("[")
+# returns nil if no paren
+#word, defn, rels = line[0...space], line[paren,$~[1].size], line[paren+$~[1].size...brace].strip, line[brace+1...line.size-1].split(" ")
           space, brace = line.index(" "), line.index("[")
           word, defn, rels = line[0...space], line[space...brace].strip, line[brace+1...line.size-1].split(" ")
-          Word.relatives(*(rels.map {|r| get(r, defn)}), get(word, defn))
+          Word.relatives(*(rels.map {|r| get(r)}), get(word))
         end
       end
     end
 
-    def get(word, defn)
-      @dict[word] ||= Word.new(word, defn)
+    def clean!
+      File.open(File.expand_path('../../../data/bogus', __FILE__)) do |f|
+        f.each_line do |line|
+          delete get(line.chomp)
+        end
+      end
+    end
+
+    def get(word)
+      @dict[word] ||= Word.new(word)
     end
   end
 end
