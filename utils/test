@@ -4,3 +4,8 @@ require 'dat'
 include Dat
 
 ## Insert code to run
+
+results = Logic.perturb('dat', Dict.new)
+
+p results
+p results.size
