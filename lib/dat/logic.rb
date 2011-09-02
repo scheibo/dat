@@ -7,13 +7,13 @@ module Dat
       result = []
       if opt[:add]
         (0..size).each do |i|
-          result << try_letters(word[0,i], word[i,size], word,  dict)
+          try_letters(word[0,i], word[i,size], word,  dict, result)
         end
       end
 
       if opt[:replace]
         (0...size).each do |i|
-          result << try_letters(word[0,i], word[i+1,size], word, dict)
+          try_letters(word[0,i], word[i+1,size], word, dict, result)
         end
       end
 
@@ -26,13 +26,12 @@ module Dat
         end
       end
 
-      result.flatten
+      result
     end
 
     private
 
-    def self.try_letters(start, finish, word, dict)
-      result = []
+    def self.try_letters(start, finish, word, dict, result)
       ('A'..'Z').each do |c|
         w = "#{start}#{c}#{finish}".upcase
         if dict[w] && w != word.upcase
