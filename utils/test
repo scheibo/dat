@@ -5,7 +5,5 @@ include Dat
 
 ## Insert code to run
 
-results = Logic.perturb('dat', Dict.new)
-
-p results
-p results.size
+p Logic.levenshtein 'sitting', 'kitten'
+p Logic.levenshtein 'Sunday', 'Saturday'
