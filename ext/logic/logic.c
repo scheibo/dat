@@ -88,14 +88,14 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   int i, j;
   char *s = StringValueCStr(a);
   char *t = StringValueCStr(b);
-  long m = RSTRING_LEN(StringValuePtr(s));
-  long n = RSTRING_LEN(StrintValuePtr(s));
+  long m = RSTRING_LEN(StringValuePtr(a));
+  long n = RSTRING_LEN(StringValuePtr(b));
 
   /* for all i and j, d[i,j] will hold the Levenshtein distance between
    * the first i characters of s and the first j characters of t;
    * note that d has (m+1)x(n+1) values */
   long **d = malloc(m+1 * sizeof(long *));
-  for(i = 0; i < nrows; i++) {
+  for(i = 0; i < m; i++) {
     d[i] = malloc(n+1 * sizeof(long));
   }
 
@@ -111,7 +111,7 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
       if (s[i-1] == t[j-1]) {
         d[i][j] = d[i-1][j-1];
       } else {               /* delete */     /* insert */      /* replace */
-        d[i][j] = MIN( MIN((d[i-1][j] + 1), (d[i][j-1] + 1)), (d[i-1][j-1] + 1) )
+        d[i][j] = MIN( MIN((d[i-1][j] + 1), (d[i][j-1] + 1)), (d[i-1][j-1] + 1) );
       }
     }
   }
