@@ -6,4 +6,4 @@ include Dat
 ## Insert code to run
 d = Dict.new
 
-p Logic.perturb 'dat', d
+p Logic.c_perturb 'dat', d

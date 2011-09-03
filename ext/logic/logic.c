@@ -19,7 +19,7 @@ static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
   return Qnil;
 }
 
-static VALUE c_perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) {
+static VALUE perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) {
   static const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
   /* Parse the options we are passed in */
@@ -67,8 +67,8 @@ static VALUE c_perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) {
   return result;
 }
 
-void Init_dat(void) {
-  VALUE Dat = rb_define_module("Dat");
-  VALUE Logic = rb_define_class_under(Dat, "Logic", rb_cObject);
-  rb_define_singleton_function(Logic, "c_perturb", c_perturb, 3);
+void Init_logic(void) {
+  VALUE mDat = rb_define_module("Dat");
+  VALUE cLogic = rb_define_class_under(mDat, "Logic", rb_cObject);
+  rb_define_singleton_function(cLogic, "perturb", perturb, 3);
 }

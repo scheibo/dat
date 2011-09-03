@@ -3,4 +3,4 @@ require 'rake'
 require 'rake/extensiontask'
 
 Bundler::GemHelper.install_tasks
-Rake::ExtensionTask.new("logic")
+Rake::ExtensionTask.new "logic"
