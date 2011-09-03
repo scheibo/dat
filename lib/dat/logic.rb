@@ -5,8 +5,6 @@ module Dat
       min_size = opt[:min_size]
       opt.default = true
 
-      #c_pertub(word, dict, min_size) if opt[:add] && opt[:replace] && opt[:delete]
-
       size = word.size
       result = []
       if opt[:add]
