@@ -4,6 +4,6 @@ require 'dat'
 include Dat
 
 ## Insert code to run
+d = Dict.new
 
-p Logic.levenshtein 'sitting', 'kitten'
-p Logic.levenshtein 'Sunday', 'Saturday'
+p Logic.perturb 'dat', d

@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake-compiler"
   s.add_development_dependency "bundler", "~> 1.0.0"
 
-  s.extensions = ["ext/dat/extconf.rb"]
+  s.extensions = ["ext/logic/extconf.rb"]
 
   s.files         = `git ls-files`.split("\n")
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
