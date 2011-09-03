@@ -94,9 +94,9 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   /* for all i and j, d[i,j] will hold the Levenshtein distance between
    * the first i characters of s and the first j characters of t;
    * note that d has (m+1)x(n+1) values */
-  long **d = malloc(m+1 * sizeof(long *));
+  long **d = malloc((m+1) * sizeof(long *));
   for(i = 0; i < m; i++) {
-    d[i] = malloc(n+1 * sizeof(long));
+    d[i] = malloc((n+1) * sizeof(long));
   }
 
   for (i = 0; i <= m; i++) {
