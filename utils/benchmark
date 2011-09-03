@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+require 'tach'
+
+d = Dat::Dict.new
+
+Tach.meter(10000) do
+  tach('logic') do
+    Dat::Logic.perturb('dat', d)
+  end
+end
