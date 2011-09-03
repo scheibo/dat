@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "dat"
 
   s.add_development_dependency "rake"
+  s.add_development_dependency "rake-compiler"
   s.add_development_dependency "bundler", "~> 1.0.0"
 
   s.extensions = ["ext/dat/extconf.rb"]
