@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+static ID id_get;
+
 /* Helper function for c substrings */
 static char* substr(char *word, long start, long end) {
   char* to = malloc(end-start);
@@ -12,7 +14,7 @@ static char* substr(char *word, long start, long end) {
 /* Helper function to add values to the results array */
 static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
   VALUE w = rb_str_new_cstr(word);
-  VALUE d = rb_funcall(dict, rb_intern("[]"), 1, rb_str_new_cstr(word));
+  VALUE d = rb_funcall(dict, id_get, 1, w);
   if (d != Qnil) {
     rb_ary_push(result, w);
   }
@@ -29,7 +31,7 @@ static VALUE perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) {
   char delete = rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue);
 
   char *word = StringValueCStr(str); /* word is assumed to already be uppercase */
-  long size = RSTRING_LEN(str); /* should be strlen(word) */
+  long size = StrValueLen(str); /* should be strlen(word) */
   VALUE result = rb_ary_new();
 
   int i, k;
@@ -71,4 +73,5 @@ void Init_logic(void) {
   VALUE mDat = rb_define_module("Dat");
   VALUE cLogic = rb_define_class_under(mDat, "Logic", rb_cObject);
   rb_define_singleton_function(cLogic, "perturb", perturb, 3);
+  id_get = rb_intern("[]");
 }

@@ -1,2 +1,2 @@
 require 'mkmf'
-create_makefile('dat/logic')
+create_makefile('logic')
