@@ -38,7 +38,7 @@ static VALUE perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) {
   char delete = rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue);
 
   char *word = StringValueCStr(str); /* word is assumed to already be uppercase */
-  long size = RSTRING_LEN(StringValuePtr(str)); /* should be strlen(word) */
+  long size = RSTRING_LEN(str); /* should be strlen(word) */
   VALUE result = rb_ary_new();
 
   int i, k;
@@ -88,8 +88,8 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   int i, j;
   char *s = StringValueCStr(a);
   char *t = StringValueCStr(b);
-  long m = RSTRING_LEN(StringValuePtr(a));
-  long n = RSTRING_LEN(StringValuePtr(b));
+  long m = RSTRING_LEN(a);
+  long n = RSTRING_LEN(b);
 
   /* for all i and j, d[i,j] will hold the Levenshtein distance between
    * the first i characters of s and the first j characters of t;
