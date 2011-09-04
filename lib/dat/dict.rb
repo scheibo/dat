@@ -16,10 +16,8 @@ module Dat
       @dict[word.upcase]
     end
 
-    def each
-      @dict.each do |k,v|
-        yield k,v
-      end
+    def each(&block)
+      @dict.each(&block)
     end
 
     def delete(word)

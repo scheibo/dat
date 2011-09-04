@@ -7,7 +7,7 @@ module Dat
     alias get word
 
     def initialize(word, defn="")
-      @word = word
+      @word = word.upcase
       @definition = defn
       @relatives = Set.new
     end
