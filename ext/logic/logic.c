@@ -10,6 +10,7 @@
 #endif
 
 static ID id_get;
+static const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 /* Helper function for c substrings */
 static char* substr(char *word, long start, long end) {
@@ -28,8 +29,14 @@ static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
   return Qnil;
 }
 
-static VALUE perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) {
-  static const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+/*static VALUE perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) { */
+static VALUE perturb(int argc, VALUE *argv, VALUE class) {
+  VALUE str, dict, opt;
+  rb_scan_args(argc, argv, "21", &str, &dict, &opt);
+
+  if NIL_P(opt) {
+    opt = rb_hash_new();
+  }
 
   /* Parse the options we are passed in */
   VALUE min_size = rb_hash_lookup2(opt, ID2SYM(rb_intern("min_size")), Qfalse);
@@ -95,7 +102,7 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
    * the first i characters of s and the first j characters of t;
    * note that d has (m+1)x(n+1) values */
   long **d = malloc((m+1) * sizeof(long *));
-  for(i = 0; i < m; i++) {
+  for(i = 0; i <= m; i++) {
     d[i] = malloc((n+1) * sizeof(long));
   }
 
@@ -129,7 +136,7 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
 void Init_logic(void) {
   VALUE mDat = rb_define_module("Dat");
   VALUE cLogic = rb_define_class_under(mDat, "Logic", rb_cObject);
-  rb_define_singleton_method(cLogic, "perturb", perturb, 3);
+  rb_define_singleton_method(cLogic, "perturb", perturb, -1);
   rb_define_singleton_method(cLogic, "levenshtein", levenshtein, 2);
   id_get = rb_intern("[]");
 }

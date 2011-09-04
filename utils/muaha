@@ -1,14 +1,37 @@
 #!/usr/bin/env ruby
 $: << File.expand_path('../../lib', __FILE__)
-require 'dat'
+#require 'dat'
 require 'curb'
 require 'nokogiri'
 
+=begin
 ('A'..'Z').each do |char|
   File.open("words/list-#{char}", 'w') do |f|
     c = Curl::Easy.http_post("http://www.hasbro.com/scrabble/en_US/search.cfm", "dictWord=#{char.downcase}")
     c.perform
     doc = Nokogiri::HTML(c.body_str)
     f.puts doc.css('#dictionary').to_s
+  end
+end
+=end
+File.open('scrabble-output', 'w') do |o|
+  ('A'..'Z').each do |char|
+    File.open("words/list-#{char}") do |f|
+      doc = Nokogiri::HTML(f.read)
+      doc.css('#dictionary p').each_with_index do |r, i|
+        line = r.to_s
+        words = line.scan(/[A-Z]{2,}/)
+        word, rels = words.shift, words
+        d = line.match(/<br><br>(.*)</)
+        if d
+          defn = d[1].strip
+        else
+          defn = ""
+        end
+        if word
+          o.puts "#{word} #{defn} [#{rels.join(" ")}]"
+        end
+      end
+    end
   end
 end

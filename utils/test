@@ -6,7 +6,7 @@ include Dat
 ## Insert code to run
 d = Dict.new
 
-p Logic.perturb 'dat', d
+p (Logic.perturb 'dat', d, :min_size => 3, :add => false).size
 
 #l = Logic.path(d, Word.new('dat'), Word.new('lame'), nil, [], :min_size => 3, :max_depth => 20)
 #k = Logic.path(d, Word.new('lame'), Word.new('labia'), nil, [], :min_size => 3, :max_depth => 20)
@@ -15,3 +15,5 @@ p Logic.perturb 'dat', d
 #p [l, k]
 
 #p Logic.perturb 'sis', d, :min_size => 3
+#p Logic.levenshtein('kitten', 'sitting')
+#p Logic.levenshtein('xyzzy', 'hellosmal')

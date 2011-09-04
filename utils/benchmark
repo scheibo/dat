@@ -1,12 +1,30 @@
 #!/usr/bin/env ruby
 $: << File.expand_path('../../lib', __FILE__)
 require 'dat'
+require './rb-logic'
 require 'tach'
 
 d = Dat::Dict.new
-
+=begin
 Tach.meter(10000) do
-  tach('logic') do
-    Dat::Logic.perturb('dat', d)
+  tach('c-logic') do
+    s = (0...8).map{65.+(rand(25)).chr}.join
+    t = (0...8).map{65.+(rand(25)).chr}.join
+    Dat::Logic.levenshtein(s,t)
+  end
+  tach('rb-logic') do
+    s = (0...8).map{65.+(rand(25)).chr}.join
+    t = (0...8).map{65.+(rand(25)).chr}.join
+    RbDat::Logic.levenshtein(s,t)
   end
 end
+=end
+Tach.meter(10000) do
+  tach('c-logic') do
+    Dat::Logic.perturb('dat', d)
+  end
+  tach('rb-logic') do
+    RbDat::Logic.perturb('dat', d)
+  end
+end
+
