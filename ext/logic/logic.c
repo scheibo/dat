@@ -59,11 +59,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
     opt = rb_hash_new();
   }
 
-  /* Parse the options we are passed in */
   VALUE min_size = rb_hash_lookup2(opt, ID2SYM(rb_intern("min_size")), Qfalse);
-  char add = rb_hash_lookup2(opt, ID2SYM(rb_intern("add")), Qtrue);
-  char replace = rb_hash_lookup2(opt, ID2SYM(rb_intern("replace")), Qtrue);
-  char delete = rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue);
 
   char *word = StringValueCStr(str); /* word is assumed to already be uppercase */
   long size = RSTRING_LEN(str); /* should be strlen(word) */
@@ -74,7 +70,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
   for(i = 0; i <= size; i++) {
     start = substr(word, 0, i);
     for(j = 0; c = alpha[j]; j++) {
-      if (add) {
+      if (RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("add")), Qtrue))) {
         fin = substr(word, i, size);
         w = malloc((size+2) * sizeof(char));
         strncpy(w, start, i);
@@ -85,7 +81,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
         free(fin);
       }
       if (i < size) {
-        if (replace) {
+        if (RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("replace")), Qtrue))) {
           fin = substr(word, i+1, size);
           w = malloc((size+1) * sizeof(char));
           strncpy(w, start, i);
@@ -97,7 +93,8 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
         }
       }
     }
-    if (i < size && delete && (!min_size || (size > FIX2LONG(min_size)))) {
+    if (i < size && RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue)) &&
+        (!min_size || (size > FIX2LONG(min_size)))) {
       fin = substr(word, i+1, size);
       w = malloc(size * sizeof(char));
       strncpy(w, start, i);
