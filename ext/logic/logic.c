@@ -23,7 +23,7 @@ static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
   VALUE w = rb_str_new_cstr(word);
   VALUE d = rb_funcall(dict, id_get, 1, w);
   if (!NIL_P(d)) {
-    rb_ary_push(result, w);
+    rb_ary_push(result, d);
   }
   return Qnil;
 }

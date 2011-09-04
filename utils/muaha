@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+require 'curb'
+require 'nokogiri'
+
+=begin
+d = Dat::Dict.new 'all.txt'
+('A'..'Z').each do |c|
+  File.open("words/list-#{c}", 'w') do |f|
+    d.each do |k,v|
+      f.puts k.downcase if k[0] == c
+    end
+  end
+end
+=end
+
+# Search every word we know and if they aren't in the Hasbro scrabble dictionary
+# we won't include them - this should get rid of bad words. This might also find
+# us words we may be missing.
+#
+# TODO: note this also catches the word 'SCRABBLE' on non-words, make sure we
+# remove them later.
+["X"].each do |ch|
+  results = []
+  File.open("words/list-#{ch}").each_line do |line|
+    word = line.chomp
+    c = Curl::Easy.http_post("http://www.hasbro.com/scrabble/en_US/search.cfm", "dictWord=#{word.downcase}")
+    c.perform
+    doc = Nokogiri::HTML(c.body_str)
+    ws = doc.css('#dictionary').to_s.scan(/[A-Z]{2,}/)
+    results << ws
+  end
+  File.open("words/done-#{ch}", 'w') do |f|
+    results.flatten.each do |r|
+      f.puts r.upcase
+    end
+  end
+end
+
