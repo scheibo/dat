@@ -110,7 +110,19 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
   return result;
 }
 
-/* static VALUE damerau_levenshtein(VALUE class, VALUE a, VALUE b) { } */
+static VALUE damerau_levenshtein(VALUE class, VALUE a, VALUE b) {
+  /* Make sure the arguments we are passed are not null */
+  if (NIL_P(a) && NIL_P(b)) return LONG2FIX(0L);
+  if (NIL_P(a) && !NIL_P(b)) return LONG2FIX(RSTRING_LEN(b));
+  if (!NIL_P(a) && NIL_P(b)) return LONG2FIX(RSTRING_LEN(a));
+
+  long m = RSTRING_LEN(a);
+  long n = RSTRING_LEN(b);
+
+  if (!m) return LONG2FIX(n);
+  if (!n) return LONG2FIX(m);
+
+}
 
 static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   int i, j;
@@ -142,9 +154,7 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   }
 
   VALUE val = LONG2FIX(d[m][n]);
-
   free2d(d, m+1);
-
   return val;
 }
 

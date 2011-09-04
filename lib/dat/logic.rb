@@ -34,8 +34,8 @@ module Dat
     end
 
     def self.damerau_levenshtein(s, t)
-      return ((t.nil? && t.empty?) ? 0 : t.size) if s.nil? && s.empty?
-      return s.size if t.nil? && t.empty?
+      return ((t.nil? || t.empty?) ? 0 : t.size) if s.nil? || s.empty?
+      return s.size if t.nil? || t.empty?
 
       m, n = s.size, t.size
       inf = m + n
