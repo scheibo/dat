@@ -6,12 +6,12 @@ include Dat
 ## Insert code to run
 d = Dict.new
 
-#p Logic.perturb 'dat', d
+p Logic.perturb 'dat', d
 
-l = Logic.path(d, Word.new('dat'), Word.new('lame'), nil, [], :min_size => 3, :max_depth => 20)
-k = Logic.path(d, Word.new('lame'), Word.new('labia'), nil, [], :min_size => 3, :max_depth => 20)
+#l = Logic.path(d, Word.new('dat'), Word.new('lame'), nil, [], :min_size => 3, :max_depth => 20)
+#k = Logic.path(d, Word.new('lame'), Word.new('labia'), nil, [], :min_size => 3, :max_depth => 20)
 
-puts "RESULT: "
-p [l, k]
+#puts "RESULT: "
+#p [l, k]
 
 #p Logic.perturb 'sis', d, :min_size => 3

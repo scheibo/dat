@@ -129,7 +129,7 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
 void Init_logic(void) {
   VALUE mDat = rb_define_module("Dat");
   VALUE cLogic = rb_define_class_under(mDat, "Logic", rb_cObject);
-  rb_define_singleton_function(cLogic, "perturb", perturb, 3);
-  rb_define_singleton_function(cLogic, "levenshtein", levenshtein, 2);
+  rb_define_singleton_method(cLogic, "perturb", perturb, 3);
+  rb_define_singleton_method(cLogic, "levenshtein", levenshtein, 2);
   id_get = rb_intern("[]");
 }
