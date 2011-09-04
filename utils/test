@@ -4,11 +4,8 @@ require 'dat'
 include Dat
 
 ## Insert code to run
-d = Dict.new
+#d = Dict.new
 
-d.each do |k,v|
-  p k
-end
 #p (Logic.perturb 'dat', d, :min_size => 3, :add => false).size
 
 #l = Logic.path(d, Word.new('dat'), Word.new('lame'), nil, [], :min_size => 3, :max_depth => 20)
@@ -20,3 +17,8 @@ end
 #p Logic.perturb 'sis', d, :min_size => 3
 #p Logic.levenshtein('kitten', 'sitting')
 #p Logic.levenshtein('xyzzy', 'hellosmal')
+
+p Logic.damerau_levenshtein 'ca', 'abc' # => 2
+p Logic.damerau_levenshtein 'teusday', 'tuesday' # => 1
+p Logic.damerau_levenshtein 'teusday', 'thursday' # => 2
+p Logic.damerau_levenshtein 'tuesday', 'something' # => 8

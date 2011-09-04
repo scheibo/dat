@@ -33,6 +33,36 @@ module Dat
       result
     end
 
+    def self.damerau_levenshtein(s, t)
+      return ((t.nil? && t.empty?) ? 0 : t.size) if s.nil? && s.empty?
+      return s.size if t.nil? && t.empty?
+
+      m, n = s.size, t.size
+      inf = m + n
+      h = Array.new(m+2) { Array.new(n+2) }
+
+      h[0][0] = inf
+      (0..m).each { |i| h[i+1][1] = i; h[i+1][0] = inf }
+      (0..n).each { |j| h[1][j+1] = j; h[0][j+1] = inf }
+
+      da = {}
+      (s + t).each_char {|c| da[c] = 0 }
+
+      (1..m).each do |i|
+        db = 0
+        (1..n).each do |j|
+          i1 = da[t[j-1]]
+          j1 = db
+          d = ( (s[i-1] == t[j-1]) ? 0 : 1)
+          db = j if d == 0
+          h[i+1][j+1] = [ h[i][j]+d, h[i+1][j] + 1, h[i][j+1]+1,
+                          h[i1][j1] + (i-i1-1) + 1 + (j-j1-1) ].min
+        end
+        da[s[i-1]] = i
+      end
+      h[m+1][n+1]
+    end
+
     def self.levenshtein(s, t)
       m, n = s.size, t.size
       # for all i and j, d[i,j] will hold the Levenshtein distance between
