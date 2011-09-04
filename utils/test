@@ -15,12 +15,10 @@ include Dat
 #p [l, k]
 
 #p Logic.perturb 'sis', d, :min_size => 3
-p Logic.levenshtein('kitten', 'sitting') # => 3
-p Logic.levenshtein('xyzzy', 'hellosmal') # => 9
+p Logic.leven('kitten', 'sitting') # => 3
+p Logic.leven('xyzzy', 'hellosmal') # => 9
 
-=begin
-p Logic.damerau_levenshtein 'ca', 'abc' # => 2
-p Logic.damerau_levenshtein 'teusday', 'tuesday' # => 1
-p Logic.damerau_levenshtein 'teusday', 'thursday' # => 2
-p Logic.damerau_levenshtein 'tuesday', 'something' # => 8
-=end
+p Logic.damlev 'CA', 'ABC' # => 2
+p Logic.damlev 'TEUSDAY', 'TUESDAY' # => 1
+p Logic.damlev 'TEUSDAY', 'THRUSDAY' # => 2
+p Logic.damlev 'TUESDAY', 'SOMETHING' # => 8

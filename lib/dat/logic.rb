@@ -33,11 +33,10 @@ module Dat
       result
     end
 
-    def self.damerau_levenshtein(s, t)
-      return ((t.nil? || t.empty?) ? 0 : t.size) if s.nil? || s.empty?
-      return s.size if t.nil? || t.empty?
-
+    def self.damlev(s, t)
       m, n = s.size, t.size
+      return n if m == 0
+      return m if n == 0
       inf = m + n
       h = Array.new(m+2) { Array.new(n+2) }
 
@@ -63,7 +62,7 @@ module Dat
       h[m+1][n+1]
     end
 
-    def self.levenshtein(s, t)
+    def self.leven(s, t)
       m, n = s.size, t.size
       # for all i and j, d[i,j] will hold the Levenshtein distance between
       # the first i characters of s and the first j characters of t;
@@ -104,7 +103,7 @@ module Dat
     # away from the goal. To be extra safe it is important to timeout this
     # function, using an actual interval of time.
     def self.path(dict, start, target, orig_dist=nil, result=[], opt={})
-      orig_dist ||= levenshtein(start.word.upcase, target.word.upcase)
+      orig_dist ||= leven(start.get.upcase, target.get.upcase)
 
       p [start, target, result]
 
@@ -114,7 +113,7 @@ module Dat
       # We also want to stop if we start to get too far away from the word we
       # are targeting. While it is possible we could eventually get to our
       # target, it is more unlikely the further away from it that we get.
-      raise Stop if (levenshtein(start.word.upcase, target.word.upcase) - orig_dist) > (opt[:max_distance] ? opt[:max_distance] : MAX_ALLOWABLE_DISTANCE)
+      raise Stop if (leven(start.word.upcase, target.word.upcase) - orig_dist) > (opt[:max_distance] ? opt[:max_distance] : MAX_ALLOWABLE_DISTANCE)
 
       result << start
       # short circuit if we happen to have the case where start is the target
@@ -126,7 +125,7 @@ module Dat
       # This should be parallelizable - if we do spawn a thread for each
       # perturbed word, other than quickly running out of threads, the
       # levenshtein distance calculation is a lot less necessary.
-      perturb(start.word, dict, opt).sort_by { |w| levenshtein(w.word.upcase, target.word.upcase) }.each do |word|
+      perturb(start.get, dict, opt).sort_by { |w| leven(w.get.upcase, target.get.upcase) }.each do |word|
         if !result.include?(word)
           begin
             pth = path(dict, word, target, orig_dist, result.clone, opt)

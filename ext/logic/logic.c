@@ -3,6 +3,8 @@
 #include <stdlib.h>
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#define ASCII_A 65
+#define ALPHABET_SIZE 26
 
 #if !defined(RSTRING_LEN)
 # define RSTRING_LEN(x) (RSTRING(x)->len)
@@ -21,7 +23,7 @@ static char* substr(char *word, long start, long end) {
 
 /* Helper to create a 2 dimensional array */
 static long** alloc2d(long a, long b) {
-  int i;
+  long i;
   long **d = malloc(a * sizeof(long *));
   for(i = 0; i < a; i++) {
     d[i] = malloc(b * sizeof(long));
@@ -31,7 +33,7 @@ static long** alloc2d(long a, long b) {
 
 /* Helper to free a 2 dimensional array */
 static void free2d(long **d, long size) {
-  int i;
+  long i;
   for(i = 0; i < size; i++) {
     free(d[i]);
   }
@@ -67,11 +69,11 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
   long size = RSTRING_LEN(str); /* should be strlen(word) */
   VALUE result = rb_ary_new();
 
-  int i, k;
+  long i, j;
   char c, *start, *fin, *w;
   for(i = 0; i <= size; i++) {
     start = substr(word, 0, i);
-    for(k = 0; c = alpha[k]; k++) {
+    for(j = 0; c = alpha[j]; j++) {
       if (add) {
         fin = substr(word, i, size);
         w = malloc((size+2) * sizeof(char));
@@ -110,22 +112,51 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
   return result;
 }
 
-static VALUE damerau_levenshtein(VALUE class, VALUE a, VALUE b) {
-  /* Make sure the arguments we are passed are not null */
-  if (NIL_P(a) && NIL_P(b)) return LONG2FIX(0L);
-  if (NIL_P(a) && !NIL_P(b)) return LONG2FIX(RSTRING_LEN(b));
-  if (!NIL_P(a) && NIL_P(b)) return LONG2FIX(RSTRING_LEN(a));
-
+/* precondition: a and b not nil and the words are uppercase */
+static VALUE damlev(VALUE class, VALUE a, VALUE b) {
+  long i, j, w, x, y, z;
+  char *s = StringValueCStr(a);
+  char *t = StringValueCStr(b);
   long m = RSTRING_LEN(a);
   long n = RSTRING_LEN(b);
 
   if (!m) return LONG2FIX(n);
   if (!n) return LONG2FIX(m);
 
+  long **h = alloc2d(m+2, n+2);
+  long inf = m + n;
+  h[0][0] = inf;
+  for (i = 0; i <= m; i++) { h[i+1][1] = i; h[i+1][0] = inf; }
+  for (j = 0; j <= n; j++) { h[1][j+1] = j; h[0][j+1] = inf; }
+
+  long da[ALPHABET_SIZE];
+  for (i = 0; i < ALPHABET_SIZE; i++) {
+    da[i] = 0;
+  }
+
+  long db, i1, j1, d;
+  for (i = 1; i <= m; i++) {
+    db = 0;
+    for (j = 1; j <= n; j++) {
+      i1 = da[t[j-1]-ASCII_A];
+      j1 = db;
+      d = ( (s[i-1] == t[j-1]) ? 0 : 1);
+      if (!d) {
+        db = j;
+      }
+      w = h[i][j]+d; x = h[i+1][j] + 1; y = h[i][j+1]+1; z = h[i1][j1] + (i-i1-1) + 1 + (j-j1-1);
+      h[i+1][j+1] = MIN( MIN( MIN(w, x), y ), z );
+    }
+    da[s[i-1]-ASCII_A] = i;
+  }
+
+  VALUE val = LONG2FIX(h[m+1][n+1]);
+  free2d(h, m+2);
+  return val;
 }
 
-static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
-  int i, j;
+static VALUE leven(VALUE class, VALUE a, VALUE b) {
+  long i, j;
   char *s = StringValueCStr(a);
   char *t = StringValueCStr(b);
   long m = RSTRING_LEN(a);
@@ -137,9 +168,9 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   long **d = alloc2d(m+1, n+1);
 
   for (i = 0; i <= m; i++) {
-    d[i][0] = 0;
+    d[i][0] = i;
     for (j = 0; j <= n; j++) {
-      d[0][j] = 0;
+      d[0][j] = j;
     }
   }
 
@@ -162,7 +193,7 @@ void Init_logic(void) {
   VALUE mDat = rb_define_module("Dat");
   VALUE cLogic = rb_define_class_under(mDat, "Logic", rb_cObject);
   rb_define_singleton_method(cLogic, "perturb", perturb, -1);
-  rb_define_singleton_method(cLogic, "levenshtein", levenshtein, 2);
-  /*rb_define_singleton_method(cLogic, "damerau_levenshtein", damerau_levenshtein, 2);*/
+  rb_define_singleton_method(cLogic, "leven", leven, 2);
+  rb_define_singleton_method(cLogic, "damlev", damlev, 2);
   id_get = rb_intern("[]");
 }
