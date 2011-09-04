@@ -4,8 +4,7 @@ module Dat
   class Word
     attr_reader :word
     attr_accessor :definition, :type
-    alias defn definition
-    alias defn= definition=
+    alias get word
 
     def initialize(word, defn="")
       @word = word
@@ -14,10 +13,7 @@ module Dat
     end
 
     def add_relative(word)
-      # Limiting the first three letters to match helps eliminate sum (but not
-      # all false positives). Maybe a smarter way of finding relatives is needed
-      # to avoid this.
-      @relatives.add word if word.word != @word and word.word[0,3] == @word[0,3]
+      @relatives.add word if word.get != @word
     end
 
     def relatives
