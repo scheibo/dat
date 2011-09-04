@@ -19,6 +19,25 @@ static char* substr(char *word, long start, long end) {
   return to;
 }
 
+/* Helper to create a 2 dimensional array */
+static long** alloc2d(long a, long b) {
+  int i;
+  long **d = malloc(a * sizeof(long *));
+  for(i = 0; i < a; i++) {
+    d[i] = malloc(b * sizeof(long));
+  }
+  return d;
+}
+
+/* Helper to free a 2 dimensional array */
+static void free2d(long **d, long size) {
+  int i;
+  for(i = 0; i < size; i++) {
+    free(d[i]);
+  }
+  free(d);
+}
+
 /* Helper function to add values to the results array */
 static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
   VALUE w = rb_str_new_cstr(word);
@@ -91,6 +110,8 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
   return result;
 }
 
+/* static VALUE damerau_levenshtein(VALUE class, VALUE a, VALUE b) { } */
+
 static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   int i, j;
   char *s = StringValueCStr(a);
@@ -101,10 +122,7 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
   /* for all i and j, d[i,j] will hold the Levenshtein distance between
    * the first i characters of s and the first j characters of t;
    * note that d has (m+1)x(n+1) values */
-  long **d = malloc((m+1) * sizeof(long *));
-  for(i = 0; i <= m; i++) {
-    d[i] = malloc((n+1) * sizeof(long));
-  }
+  long **d = alloc2d(m+1, n+1);
 
   for (i = 0; i <= m; i++) {
     d[i][0] = 0;
@@ -125,10 +143,7 @@ static VALUE levenshtein(VALUE class, VALUE a, VALUE b) {
 
   VALUE val = LONG2FIX(d[m][n]);
 
-  for(i = 0; i <= m; i++) {
-    free(d[i]);
-  }
-  free(d);
+  free2d(d, m+1);
 
   return val;
 }
@@ -138,5 +153,6 @@ void Init_logic(void) {
   VALUE cLogic = rb_define_class_under(mDat, "Logic", rb_cObject);
   rb_define_singleton_method(cLogic, "perturb", perturb, -1);
   rb_define_singleton_method(cLogic, "levenshtein", levenshtein, 2);
+  /*rb_define_singleton_method(cLogic, "damerau_levenshtein", damerau_levenshtein, 2);*/
   id_get = rb_intern("[]");
 }
