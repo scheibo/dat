@@ -33,7 +33,36 @@ module RbDat
       result
     end
 
-    def self.levenshtein(s, t)
+    def self.damlev(s, t)
+      m, n = s.size, t.size
+      return n if m == 0
+      return m if n == 0
+      inf = m + n
+      h = Array.new(m+2) { Array.new(n+2) }
+
+      h[0][0] = inf
+      (0..m).each { |i| h[i+1][1] = i; h[i+1][0] = inf }
+      (0..n).each { |j| h[1][j+1] = j; h[0][j+1] = inf }
+
+      da = {}
+      (s + t).each_char {|c| da[c] = 0 }
+
+      (1..m).each do |i|
+        db = 0
+        (1..n).each do |j|
+          i1 = da[t[j-1]]
+          j1 = db
+          d = ( (s[i-1] == t[j-1]) ? 0 : 1)
+          db = j if d == 0
+          h[i+1][j+1] = [ h[i][j]+d, h[i+1][j] + 1, h[i][j+1]+1,
+                          h[i1][j1] + (i-i1-1) + 1 + (j-j1-1) ].min
+        end
+        da[s[i-1]] = i
+      end
+      h[m+1][n+1]
+    end
+
+    def self.leven(s, t)
       m, n = s.size, t.size
       # for all i and j, d[i,j] will hold the Levenshtein distance between
       # the first i characters of s and the first j characters of t;
@@ -74,7 +103,7 @@ module RbDat
     # away from the goal. To be extra safe it is important to timeout this
     # function, using an actual interval of time.
     def self.path(dict, start, target, orig_dist=nil, result=[], opt={})
-      orig_dist ||= levenshtein(start.word.upcase, target.word.upcase)
+      orig_dist ||= leven(start.get.upcase, target.get.upcase)
 
       p [start, target, result]
 
@@ -84,7 +113,7 @@ module RbDat
       # We also want to stop if we start to get too far away from the word we
       # are targeting. While it is possible we could eventually get to our
       # target, it is more unlikely the further away from it that we get.
-      raise Stop if (levenshtein(start.word.upcase, target.word.upcase) - orig_dist) > (opt[:max_distance] ? opt[:max_distance] : MAX_ALLOWABLE_DISTANCE)
+      raise Stop if (leven(start.word.upcase, target.word.upcase) - orig_dist) > (opt[:max_distance] ? opt[:max_distance] : MAX_ALLOWABLE_DISTANCE)
 
       result << start
       # short circuit if we happen to have the case where start is the target
@@ -96,7 +125,7 @@ module RbDat
       # This should be parallelizable - if we do spawn a thread for each
       # perturbed word, other than quickly running out of threads, the
       # levenshtein distance calculation is a lot less necessary.
-      perturb(start.word, dict, opt).sort_by { |w| levenshtein(w.word.upcase, target.word.upcase) }.each do |word|
+      perturb(start.get, dict, opt).sort_by { |w| leven(w.get.upcase, target.get.upcase) }.each do |word|
         if !result.include?(word)
           begin
             pth = path(dict, word, target, orig_dist, result.clone, opt)
