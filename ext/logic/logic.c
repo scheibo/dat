@@ -50,7 +50,7 @@ static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
   return Qnil;
 }
 
-/*static VALUE perturb(VALUE class, VALUE str, VALUE dict, VALUE opt) { */
+/* precondition: str and dict are not nil */
 static VALUE perturb(int argc, VALUE *argv, VALUE class) {
   VALUE str, dict, opt;
   rb_scan_args(argc, argv, "21", &str, &dict, &opt);
