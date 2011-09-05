@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include <stdio.h>
+
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define ASCII_A 65
@@ -21,20 +23,11 @@ typedef int8_t size;
 static ID id_get;
 static const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-/* Helper function for c substrings */
-static char* substr(char *word, long start, long end) {
-  char *to = malloc((end-start) * sizeof(char));
-  strncpy(to, word+start, end);
-  return to;
-}
-
 /* Helper function to add values to the results array */
 static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
   VALUE w = rb_str_new_cstr(word);
   VALUE d = rb_funcall(dict, id_get, 1, w);
-  if (!NIL_P(d)) {
-    rb_ary_push(result, d);
-  }
+  if (!NIL_P(d)) rb_ary_push(result, d);
   return Qnil;
 }
 
@@ -42,56 +35,51 @@ static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {
 static VALUE perturb(int argc, VALUE *argv, VALUE class) {
   VALUE str, dict, opt;
   rb_scan_args(argc, argv, "21", &str, &dict, &opt);
-
-  if NIL_P(opt) {
-    opt = rb_hash_new();
-  }
+  if (NIL_P(opt)) opt = rb_hash_new();
 
   VALUE min_size = rb_hash_lookup2(opt, ID2SYM(rb_intern("min_size")), Qfalse);
 
+  char start[SIZE_BYTES], fin[SIZE_BYTES], w[SIZE_BYTES];
+
   char *word = StringValueCStr(str); /* word is assumed to already be uppercase */
-  long size = RSTRING_LEN(str); /* should be strlen(word) */
+  size len = RSTRING_LEN(str); /* should be strlen(word) */
   VALUE result = rb_ary_new();
 
-  long i, j;
-  char c, *start, *fin, *w;
-  for(i = 0; i <= size; i++) {
-    start = substr(word, 0, i);
+  char add = RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("add")), Qtrue));
+  char replace = RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("replace")), Qtrue));
+  char delete = RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue));
+
+  size i, j;
+  char c;
+  for(i = 0; i <= len; i++) {
+    strncpy(start, word, i);
+    start[i] = '\0';
     for(j = 0; c = alpha[j]; j++) {
-      if (RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("add")), Qtrue))) {
-        fin = substr(word, i, size);
-        w = malloc((size+2) * sizeof(char));
-        strncpy(w, start, i);
+      if (add) {
+        strncpy(fin, word+i, len+1);
+        strncpy(w, start, i+1);
         strncat(w, &c, 1);
-        strncat(w, fin, size-i);
-        add_if_in_dict(dict, w, result);
-        free(w);
-        free(fin);
+        strncat(w, fin, len-i);
+        //add_if_in_dict(dict, w, result);
       }
-      if (i < size) {
-        if (RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("replace")), Qtrue))) {
-          fin = substr(word, i+1, size);
-          w = malloc((size+1) * sizeof(char));
-          strncpy(w, start, i);
+      if (i < len) {
+        if (replace) {
+          (i+1 == len) ? strncpy(fin, "", 2) : strncpy(fin, word+i+1, len+1);
+          strncpy(w, start, i+1);
           strncat(w, &c, 1);
-          strncat(w, fin, size-i-1);
-          add_if_in_dict(dict, w, result);
-          free(w);
-          free(fin);
+          strncat(w, fin, len-i-1);
+          w[len+1] = '\0';
+          //add_if_in_dict(dict, w, result);
         }
       }
     }
-    if (i < size && RTEST(rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue)) &&
-        (!min_size || (size > FIX2LONG(min_size)))) {
-      fin = substr(word, i+1, size);
-      w = malloc(size * sizeof(char));
-      strncpy(w, start, i);
-      strncat(w, fin, size-i-1);
-      add_if_in_dict(dict, w, result);
-      free(w);
-      free(fin);
+    if (i < len && delete && (!min_size || (len > FIX2LONG(min_size)))) {
+      (i+1 == len) ? strncpy(fin, "", 2) : strncpy(fin, word+i+1, len+1);
+      strncpy(w, start, i+1);
+      strncat(w, fin, len-i-1);
+      w[len] = '\0';
+      //add_if_in_dict(dict, w, result);
     }
-    free(start);
   }
 
   return result;

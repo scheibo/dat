@@ -24,9 +24,10 @@ module RbDat
       if opt.fetch(:delete, true)
         (0...size).each do |i|
           w = "#{word[0,i]}#{word[i+1,size]}".upcase
-          if dict[w] && (!opt[:min_size] || size > opt[:min_size])
-            result << dict[w]
-          end
+          #if dict[w] && (!opt[:min_size] || size > opt[:min_size])
+          #  result << dict[w]
+          #end
+          result << w
         end
       end
 
@@ -146,7 +147,7 @@ module RbDat
     def self.try_letters(start, finish, word, dict, result)
       ('A'..'Z').each do |c|
         w = "#{start}#{c}#{finish}".upcase
-        result << dict[w] if dict[w] and w != word.upcase
+        result << w #dict[w] if dict[w] and w != word.upcase
       end
     end
   end
