@@ -60,7 +60,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
         strncpy(w, start, i+1);
         strncat(w, &c, 1);
         strncat(w, fin, len-i);
-        //add_if_in_dict(dict, w, result);
+        add_if_in_dict(dict, w, result);
       }
       if (i < len) {
         if (replace) {
@@ -69,7 +69,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
           strncat(w, &c, 1);
           strncat(w, fin, len-i-1);
           w[len+1] = '\0';
-          //add_if_in_dict(dict, w, result);
+          add_if_in_dict(dict, w, result);
         }
       }
     }
@@ -78,7 +78,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
       strncpy(w, start, i+1);
       strncat(w, fin, len-i-1);
       w[len] = '\0';
-      //add_if_in_dict(dict, w, result);
+      add_if_in_dict(dict, w, result);
     }
   }
 
