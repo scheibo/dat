@@ -4,7 +4,16 @@ require 'dat'
 require './rb-logic'
 require 'tach'
 
-#d = Dat::Dict.new
+d = Dat::Dict.new
+Tach.meter(10000) do
+  tach('c-logic') do
+    Dat::Logic.perturb('DAT', d)
+  end
+  tach('rb-logic') do
+    RbDat::Logic.perturb('DAT', d)
+  end
+end
+=begin
 Tach.meter(10000) do
   tach('c-logic') do
     s = (0...8).map{65.+(rand(25)).chr}.join
@@ -17,7 +26,6 @@ Tach.meter(10000) do
     RbDat::Logic.damlev(s,t)
   end
 end
-=begin
 Tach.meter(10000) do
   tach('c-logic') do
     Dat::Logic.damlev 'CA', 'ABC' # => 2

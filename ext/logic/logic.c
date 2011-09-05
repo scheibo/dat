@@ -1,10 +1,17 @@
 #include <ruby.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
 #define ASCII_A 65
 #define ALPHABET_SIZE 26
+
+/* only allow strings up to length of 30 */
+#define SIZE_BYTES 32
+/* save space by storing the string lengths in a small int */
+typedef int8_t size;
 
 #if !defined(RSTRING_LEN)
 # define RSTRING_LEN(x) (RSTRING(x)->len)
@@ -19,25 +26,6 @@ static char* substr(char *word, long start, long end) {
   char *to = malloc((end-start) * sizeof(char));
   strncpy(to, word+start, end);
   return to;
-}
-
-/* Helper to create a 2 dimensional array */
-static long** alloc2d(long a, long b) {
-  long i;
-  long **d = malloc(a * sizeof(long *));
-  for(i = 0; i < a; i++) {
-    d[i] = malloc(b * sizeof(long));
-  }
-  return d;
-}
-
-/* Helper to free a 2 dimensional array */
-static void free2d(long **d, long size) {
-  long i;
-  for(i = 0; i < size; i++) {
-    free(d[i]);
-  }
-  free(d);
 }
 
 /* Helper function to add values to the results array */
@@ -111,27 +99,27 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
 
 /* precondition: a and b not nil and the words are uppercase */
 static VALUE damlev(VALUE class, VALUE a, VALUE b) {
-  long i, j, w, x, y, z;
+  size i, j, w, x, y, z;
   char *s = StringValueCStr(a);
   char *t = StringValueCStr(b);
-  long m = RSTRING_LEN(a);
-  long n = RSTRING_LEN(b);
+  size m = (size) RSTRING_LEN(a);
+  size n = (size) RSTRING_LEN(b);
 
-  if (!m) return LONG2FIX(n);
-  if (!n) return LONG2FIX(m);
+  if (!m) return INT2FIX(n);
+  if (!n) return INT2FIX(m);
 
-  long **h = alloc2d(m+2, n+2);
-  long inf = m + n;
+  size h[SIZE_BYTES][SIZE_BYTES];
+  size inf = m + n;
   h[0][0] = inf;
   for (i = 0; i <= m; i++) { h[i+1][1] = i; h[i+1][0] = inf; }
   for (j = 0; j <= n; j++) { h[1][j+1] = j; h[0][j+1] = inf; }
 
-  long da[ALPHABET_SIZE];
+  size da[ALPHABET_SIZE];
   for (i = 0; i < ALPHABET_SIZE; i++) {
     da[i] = 0;
   }
 
-  long db, i1, j1, d;
+  size db, i1, j1, d;
   for (i = 1; i <= m; i++) {
     db = 0;
     for (j = 1; j <= n; j++) {
@@ -147,22 +135,21 @@ static VALUE damlev(VALUE class, VALUE a, VALUE b) {
     da[s[i-1]-ASCII_A] = i;
   }
 
-  VALUE val = LONG2FIX(h[m+1][n+1]);
-  free2d(h, m+2);
+  VALUE val = INT2FIX(h[m+1][n+1]);
   return val;
 }
 
 static VALUE leven(VALUE class, VALUE a, VALUE b) {
-  long i, j;
+  size i, j;
   char *s = StringValueCStr(a);
   char *t = StringValueCStr(b);
-  long m = RSTRING_LEN(a);
-  long n = RSTRING_LEN(b);
+  size m = (size) RSTRING_LEN(a);
+  size n = (size) RSTRING_LEN(b);
 
   /* for all i and j, d[i,j] will hold the Levenshtein distance between
    * the first i characters of s and the first j characters of t;
    * note that d has (m+1)x(n+1) values */
-  long **d = alloc2d(m+1, n+1);
+  size d[SIZE_BYTES][SIZE_BYTES];
 
   for (i = 0; i <= m; i++) {
     d[i][0] = i;
@@ -181,8 +168,7 @@ static VALUE leven(VALUE class, VALUE a, VALUE b) {
     }
   }
 
-  VALUE val = LONG2FIX(d[m][n]);
-  free2d(d, m+1);
+  VALUE val = INT2FIX(d[m][n]);
   return val;
 }
 
