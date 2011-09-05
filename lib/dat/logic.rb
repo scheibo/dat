@@ -36,6 +36,7 @@ module Dat
       result
     end
 
+    # http://alias-i.com/lingpipe/src/com/aliasi/spell/JaroWinklerDistance.java
     def self.jaro_winkler(s, t)
       m, n = s.size, t.size
       return (n == 0 ? 1.0 : 0.0) if m == 0
