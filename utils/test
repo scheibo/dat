@@ -4,9 +4,9 @@ require 'dat'
 include Dat
 
 ## Insert code to run
-d = Dict.new
+#d = Dict.new
 
-p (Logic.perturb 'dat', d, :min_size => 3, :add => false).size
+#p (Logic.perturb 'dat', d, :min_size => 3, :add => false).size
 
 #l = Logic.path(d, Word.new('dat'), Word.new('lame'), nil, [], :min_size => 3, :max_depth => 20)
 #k = Logic.path(d, Word.new('lame'), Word.new('labia'), nil, [], :min_size => 3, :max_depth => 20)
@@ -22,3 +22,8 @@ p Logic.damlev 'CA', 'ABC' # => 2
 p Logic.damlev 'TEUSDAY', 'TUESDAY' # => 1
 p Logic.damlev 'TEUSDAY', 'THRUSDAY' # => 2
 p Logic.damlev 'TUESDAY', 'SOMETHING' # => 8
+
+p Logic.jaro_winkler 'MARTHA', 'MARHTA' # => 0.961
+p Logic.jaro_winkler 'DWAYNE', 'DUANE' # => 0.84
+p Logic.jaro_winkler 'DIXON', 'DICKSONX' # => 0.813
+p Logic.jaro_winkler 'DIXON', 'DIXON' # => 1.0

@@ -6,6 +6,9 @@ module Dat
     MAX_PATH_DEPTH = 5
     MAX_ALLOWABLE_DISTANCE = 2
 
+    WEIGHT_THRESHOLD = 0.7
+    NUM_CHARS = 4
+
     def self.perturb(word, dict, opt={})
       size = word.size
       result = []
@@ -31,6 +34,51 @@ module Dat
       end
 
       result
+    end
+
+    def self.jaro_winkler(s, t)
+      m, n = s.size, t.size
+      return (n == 0 ? 1.0 : 0.0) if m == 0
+
+      range = [0, ([m,n].max/2) - 1].max
+
+      s_matched = Array.new m, false
+      t_matched = Array.new n, false
+
+      common = 0
+      (0...m).each do |i|
+        start = [0, i-range].max
+        fin = [i+range+1, n].min
+        (start...fin).each do |j|
+          next if t_matched[j] || s[i] != t[j]
+          s_matched[i] = true;
+          t_matched[j] = true;
+          common += 1
+          break
+        end
+      end
+      return 0.0 if common == 0
+
+      transposed = 0
+      j = 0
+      (0...m).each do |i|
+        next if !s_matched[i]
+        j += 1 while !t_matched[j]
+        transposed += 1 if s[i] != t[j]
+        j += 1
+      end
+      transposed /= 2
+
+      weight = ((common.to_f/m) + (common.to_f/n) + ((common-transposed)/common.to_f))/3.0
+      return weight if weight <= WEIGHT_THRESHOLD
+      p weight
+
+      max = [NUM_CHARS, [m,n].min].min
+      pos = 0
+      pos += 1 while (pos < max && s[pos] == t[pos])
+      return weight if (pos == 0)
+
+      weight + 0.1 * pos * (1.0 - weight)
     end
 
     def self.damlev(s, t)
