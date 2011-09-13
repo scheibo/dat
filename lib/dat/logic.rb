@@ -1,5 +1,7 @@
 module Dat
   class Logic
+    # TODO should be an instance with opts, all the rest changed to instance
+    # methods
 
     class Stop < Exception; end
 
@@ -152,6 +154,7 @@ module Dat
     # away from the goal. To be extra safe it is important to timeout this
     # function, using an actual interval of time.
     def self.path(dict, start, target, orig_dist=nil, result=[], opt={})
+      # TODO need to worry about the RELATIVES of every word we have chosen.
       orig_dist ||= leven(start.get.upcase, target.get.upcase)
 
       p [start, target, result]
