@@ -12,6 +12,7 @@ module Dat
     NUM_CHARS = 4
 
     def self.perturb(word, dict, opt={})
+      # TODO should relative logic be placed into perturb?
       size = word.size
       result = []
       if opt.fetch(:add, true)

@@ -5,7 +5,8 @@ include Dat
 
 ## Insert code to run
 d = Dict.new
-
+p Logic.perturb('WALKED', d) # fails for c`
+=begin
 r = (Logic.perturb 'DAT', d)
 p r.size
 p r
