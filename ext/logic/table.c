@@ -54,7 +54,8 @@ T table_new(int hint,
   T table;
   int i;
   static int primes[] = { 509, 509, 1021, 2053, 4093,
-    8191, 16381, 32771, 65521, INT_MAX };
+    8191, 16381, 32771, 65521, 131071, 262139, 524287,
+    1048573, INT_MAX };
   for (i = 1; primes[i] < hint; i++) ;
   table = malloc(sizeof (*table) +
       primes[i-1]*sizeof (table->buckets[0]));
