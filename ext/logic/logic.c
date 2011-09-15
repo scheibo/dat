@@ -5,6 +5,8 @@
 #include "ruby.h"
 #include "table.h"
 
+#include <stdio.h>
+
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
 #define ASCII_A 65
@@ -27,7 +29,7 @@ static int cmpstr(const void *x, const void *y) {
   return strcmp((char *)x, (char *)y);
 }
 
-static unsigned hashstr(const void *key) {
+static unsigned long hashstr(const void *key) {
   char *str = (char *)key;
   unsigned long hash = 5381;
   int c;
@@ -84,7 +86,9 @@ static VALUE perturb(int argc, VALUE *argv, VALUE class) {
           strncat(w, &c, 1);
           strncat(w, fin, len-i-1);
           w[len+1] = '\0';
-          add_if_in_dict(dict, w, result);
+          if (strncmp(word, w, len)) {
+            add_if_in_dict(dict, w, result);
+          }
         }
       }
     }
