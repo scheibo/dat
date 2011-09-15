@@ -8,8 +8,8 @@ describe Dat::Logic do
   end
 
   it "should behave the same for c and pure versions" do
-    Logic.perturb('DAT', @dict).should == Pure::Logic.perturb('DAT', @dict)
-    Logic.perturb('WALKED', @dict).should == Pure::Logic.perturb('WALKED', @dict)
+    Logic.perturb('DAT', @dict).sort_by(&:get).should == Pure::Logic.perturb('DAT', @dict).sort_by(&:get)
+    Logic.perturb('WALKED', @dict).sort_by(&:get).should == Pure::Logic.perturb('WALKED', @dict).sort_by(&:get)
   end
 
   it "should behave the same for upper and lower case" do
