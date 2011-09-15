@@ -1,6 +1,7 @@
 # dat
 
-dat
+dat is a word game. this is pre alpha and does very little of what it should be
+doing yet.
 
 ## Usage
 
