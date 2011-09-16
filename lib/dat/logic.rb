@@ -76,7 +76,6 @@ module Dat
 
         weight = ((common.to_f/m) + (common.to_f/n) + ((common-transposed)/common.to_f))/3.0
         return weight if weight <= WEIGHT_THRESHOLD
-        p weight
 
         max = [NUM_CHARS, [m,n].min].min
         pos = 0
