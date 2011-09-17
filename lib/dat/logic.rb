@@ -11,7 +11,7 @@ module Dat
       WEIGHT_THRESHOLD = 0.7
       NUM_CHARS = 4
 
-      def initialize(dict, opt={})
+      def initialize(dict={}, opt={})
         @dict = dict
         @selected = {}
 
@@ -49,7 +49,7 @@ module Dat
         if @delete
           (0...size).each do |i|
             w = "#{word[0,i]}#{word[i+1,size]}".upcase
-            if @dict[w] && size > @min_size)
+            if @dict[w] && size > @min_size
               result << @dict[w]
             end
           end
