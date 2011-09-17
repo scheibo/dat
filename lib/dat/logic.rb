@@ -1,38 +1,56 @@
 module Dat
   module Pure
     class Logic
-      # TODO should be an instance with opts, all the rest changed to instance
-      # methods
 
       class Stop < Exception; end
 
       MAX_PATH_DEPTH = 5
       MAX_ALLOWABLE_DISTANCE = 2
+      MIN_SIZE = 3
 
       WEIGHT_THRESHOLD = 0.7
       NUM_CHARS = 4
 
-      def self.perturb(word, dict, opt={})
+      def initialize(dict, opt={})
+        @dict = dict
+        @selected = {}
+
+        @add = opt.fetch(:add, true)
+        @replace = opt.fetch(:replace, true)
+        @delete = opt.fetch(:delete, true)
+        @transpose = opt.fetch(:transpose, false)
+
+        @min_size = opt.fetch(:min_size, MIN_SIZE)
+        @max_depth = opt.fetch(:max_depth, MAX_PATH_DEPTH)
+        @max_distance = opt.fetch(:max_distance, MAX_ALLOWABLE_DISTANCE)
+      end
+
+      def select(word)
+        @selected << word
+        @selected << word.relatives.to_a
+      end
+
+      def perturb(word)
         # TODO should relative logic be placed into perturb?
         size = word.size
         result = []
-        if opt.fetch(:add, true)
+        if @add
           (0..size).each do |i|
-            try_letters(word[0,i], word[i,size], word,  dict, result)
+            try_letters(word[0,i], word[i,size], word, result)
           end
         end
 
-        if opt.fetch(:replace, true)
+        if @replace
           (0...size).each do |i|
-            try_letters(word[0,i], word[i+1,size], word, dict, result)
+            try_letters(word[0,i], word[i+1,size], word, result)
           end
         end
 
-        if opt.fetch(:delete, true)
+        if @delete
           (0...size).each do |i|
             w = "#{word[0,i]}#{word[i+1,size]}".upcase
-            if dict[w] && (!opt[:min_size] || size > opt[:min_size])
-              result << dict[w]
+            if @dict[w] && size > @min_size)
+              result << @dict[w]
             end
           end
         end
@@ -41,7 +59,7 @@ module Dat
       end
 
       # http://alias-i.com/lingpipe/src/com/aliasi/spell/JaroWinklerDistance.java
-      def self.jaro_winkler(s, t)
+      def jaro_winkler(s, t)
         m, n = s.size, t.size
         return (n == 0 ? 1.0 : 0.0) if m == 0
 
@@ -85,7 +103,7 @@ module Dat
         weight + 0.1 * pos * (1.0 - weight)
       end
 
-      def self.damlev(s, t)
+      def damlev(s, t)
         m, n = s.size, t.size
         return n if m == 0
         return m if n == 0
@@ -114,7 +132,7 @@ module Dat
         h[m+1][n+1]
       end
 
-      def self.leven(s, t)
+      def leven(s, t)
         m, n = s.size, t.size
         # for all i and j, d[i,j] will hold the Levenshtein distance between
         # the first i characters of s and the first j characters of t;
@@ -144,8 +162,8 @@ module Dat
 
       # Returns the distance between the start and the target. Note this is not
       # the minimum distance, merely a distance
-      def self.distance(dict, start, target, opt={})
-        pth = path(dict, start, target, nil, [], opt)
+      def distance(start, target)
+        pth = path(start, target, nil, [])
         pth.size if pth
       end
 
@@ -154,7 +172,7 @@ module Dat
       # orig_dist parameter helps short circuit our effort if we ever get too far
       # away from the goal. To be extra safe it is important to timeout this
       # function, using an actual interval of time.
-      def self.path(dict, start, target, orig_dist=nil, result=[], opt={})
+      def path(start, target, orig_dist=nil, result=[])
         # TODO need to worry about the RELATIVES of every word we have chosen.
         orig_dist ||= leven(start.get.upcase, target.get.upcase)
 
@@ -162,11 +180,11 @@ module Dat
 
         # We need to stop recursion after a while so we don't end up going through
         # the entire dictionary
-        raise Stop if result.size >= (opt[:max_depth] ? opt[:max_depth] : MAX_PATH_DEPTH)
+        raise Stop if result.size >= @max_depth
         # We also want to stop if we start to get too far away from the word we
         # are targeting. While it is possible we could eventually get to our
         # target, it is more unlikely the further away from it that we get.
-        raise Stop if (leven(start.word.upcase, target.word.upcase) - orig_dist) > (opt[:max_distance] ? opt[:max_distance] : MAX_ALLOWABLE_DISTANCE)
+        raise Stop if (leven(start.word.upcase, target.word.upcase) - orig_dist) > @max_distanc
 
         result << start
         # short circuit if we happen to have the case where start is the target
@@ -178,10 +196,10 @@ module Dat
         # This should be parallelizable - if we do spawn a thread for each
         # perturbed word, other than quickly running out of threads, the
         # levenshtein distance calculation is a lot less necessary.
-        perturb(start.get, dict, opt).sort_by { |w| leven(w.get.upcase, target.get.upcase) }.each do |word|
+        perturb(start.get).sort_by { |w| leven(w.get.upcase, target.get.upcase) }.each do |word|
           if !result.include?(word)
             begin
-              pth = path(dict, word, target, orig_dist, result.clone, opt)
+              pth = path(word, target, orig_dist, result.clone)
               return pth if pth
             rescue Stop
               break
@@ -196,10 +214,10 @@ module Dat
 
       private
 
-      def self.try_letters(start, finish, word, dict, result)
+      def try_letters(start, finish, word, result)
         ('A'..'Z').each do |c|
           w = "#{start}#{c}#{finish}".upcase
-          result << dict[w] if dict[w] and w != word.upcase
+          result << @dict[w] if @dict[w] and w != word.upcase
         end
       end
     end
