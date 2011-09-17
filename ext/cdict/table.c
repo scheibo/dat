@@ -30,7 +30,7 @@
 struct T {
   int size;
   int (*cmp)(const void *x, const void *y);
-  unsigned (*hash)(const void *key);
+  unsigned long (*hash)(const void *key);
   int length;
   unsigned timestamp;
   struct binding {
@@ -44,13 +44,13 @@ static int cmpatom(const void *x, const void *y) {
   return x != y;
 }
 
-static unsigned hashatom(const void *key) {
+static unsigned long hashatom(const void *key) {
   return (unsigned long)key>>2;
 }
 
 T table_new(int hint,
     int cmp(const void *x, const void *y),
-    unsigned hash(const void *key)) {
+    unsigned long hash(const void *key)) {
   T table;
   int i;
   static int primes[] = { 509, 509, 1021, 2053, 4093,
@@ -73,7 +73,7 @@ T table_new(int hint,
 void *table_get(T table, const void *key) {
   int i;
   struct binding *p;
-  i = (*table->hash)(key)%table->size;
+  i = (int)(*table->hash)(key)%table->size;
   for (p = table->buckets[i]; p; p = p->link)
     if ((*table->cmp)(key, p->key) == 0)
       break;
@@ -85,7 +85,7 @@ void *table_put(T table, const void *key, void *value) {
   int i;
   struct binding *p;
   void *prev;
-  i = (*table->hash)(key)%table->size;
+  i = (int)(*table->hash)(key)%table->size;
   for (p = table->buckets[i]; p; p = p->link)
     if ((*table->cmp)(key, p->key) == 0)
       break;
@@ -124,7 +124,7 @@ void *table_remove(T table, const void *key) {
   int i;
   struct binding **pp;
   table->timestamp++;
-  i = (*table->hash)(key)%table->size;
+  i = (int)(*table->hash)(key)%table->size;
   for (pp = &table->buckets[i]; *pp; pp = &(*pp)->link)
     if ((*table->cmp)(key, (*pp)->key) == 0) {
       struct binding *p = *pp;

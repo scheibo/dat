@@ -3,9 +3,6 @@
 #include <stdint.h>
 
 #include "ruby.h"
-#include "table.h"
-
-#include <stdio.h>
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
@@ -24,21 +21,6 @@ typedef int8_t size;
 
 static ID id_get;
 static const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
-static int cmpstr(const void *x, const void *y) {
-  return strcmp((char *)x, (char *)y);
-}
-
-static unsigned long hashstr(const void *key) {
-  char *str = (char *)key;
-  unsigned long hash = 5381;
-  int c;
-
-  while (c = *str++)
-    hash = ((hash << 5) + hash) + c;
-
-  return hash;
-}
 
 /* Helper function to add values to the results array */
 static VALUE add_if_in_dict(VALUE dict, char *word, VALUE result) {

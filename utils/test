@@ -4,33 +4,21 @@ require 'dat'
 include Dat
 
 ## Insert code to run
-d = Dict.new
-p Logic.perturb('WALKED', d) # fails for c`
-p Pure::Logic.perturb('WALKED', d) # fails for c`
+#d = Dict.new
+
+c = CDict.new
+c.add 'HELLO'
+c.delete 'HELLO'
+p c.include?('HELLO')
 =begin
-r = (Logic.perturb 'DAT', d)
-p r.size
-p r
-p (Logic.perturb 'DAT', d, :min_size => 3, :add => false).size
+d.each do |k,v|
+  c.add k
+end
 
+c.delete 'AAH'
+c.delete 'AAL'
 
-#l = Logic.path(d, Word.new('dat'), Word.new('lame'), nil, [], :min_size => 3, :max_depth => 20)
-#k = Logic.path(d, Word.new('lame'), Word.new('labia'), nil, [], :min_size => 3, :max_depth => 20)
-
-#puts "RESULT: "
-#p [l, k]
-
-#p Logic.perturb 'sis', d, :min_size => 3
-p Logic.leven('kitten', 'sitting') # => 3
-p Logic.leven('xyzzy', 'hellosmal') # => 9
-
-p Logic.damlev 'CA', 'ABC' # => 2
-p Logic.damlev 'TEUSDAY', 'TUESDAY' # => 1
-p Logic.damlev 'TEUSDAY', 'THRUSDAY' # => 2
-p Logic.damlev 'TUESDAY', 'SOMETHING' # => 8
-=begin
-p Logic.jaro_winkler 'MARTHA', 'MARHTA' # => 0.961
-p Logic.jaro_winkler 'DWAYNE', 'DUANE' # => 0.84
-p Logic.jaro_winkler 'DIXON', 'DICKSONX' # => 0.813
-p Logic.jaro_winkler 'DIXON', 'DIXON' # => 1.0
+d.each do |k, v|
+ p c.include? k
+end
 =end
