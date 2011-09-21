@@ -8,8 +8,8 @@ include Dat
 
 c = CDict.new
 c.add 'HELLO'
-c.delete 'HELLO'
-p c.include?('HELLO')
+c.add 'GOODBYE'
+c.include? 'HELLO'
 =begin
 d.each do |k,v|
   c.add k

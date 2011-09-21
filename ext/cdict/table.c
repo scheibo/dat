@@ -45,7 +45,7 @@ static int cmpatom(const void *x, const void *y) {
 }
 
 static unsigned long hashatom(const void *key) {
-  return (unsigned long)key>>2;
+  return (unsigned long) key >> 2;
 }
 
 T table_new(int hint,
@@ -74,9 +74,11 @@ void *table_get(T table, const void *key) {
   int i;
   struct binding *p;
   i = (int)(*table->hash)(key)%table->size;
-  for (p = table->buckets[i]; p; p = p->link)
-    if ((*table->cmp)(key, p->key) == 0)
+  for (p = table->buckets[i]; p; p = p->link) {
+    if ((*table->cmp)(key, p->key) == 0) {
       break;
+    }
+  }
 
   return p ? p->value : NULL;
 }
@@ -86,9 +88,11 @@ void *table_put(T table, const void *key, void *value) {
   struct binding *p;
   void *prev;
   i = (int)(*table->hash)(key)%table->size;
-  for (p = table->buckets[i]; p; p = p->link)
-    if ((*table->cmp)(key, p->key) == 0)
+  for (p = table->buckets[i]; p; p = p->link) {
+    if ((*table->cmp)(key, p->key) == 0) {
       break;
+    }
+  }
   if (p == NULL) {
     p = malloc(sizeof *p);
     p->key = key;
@@ -96,8 +100,9 @@ void *table_put(T table, const void *key, void *value) {
     table->buckets[i] = p;
     table->length++;
     prev = NULL;
-  } else
+  } else {
     prev = p->value;
+  }
   p->value = value;
   table->timestamp++;
   return prev;
@@ -114,10 +119,11 @@ void table_map(T table,
   unsigned stamp;
   struct binding *p;
   stamp = table->timestamp;
-  for (i = 0; i < table->size; i++)
+  for (i = 0; i < table->size; i++) {
     for (p = table->buckets[i]; p; p = p->link) {
       apply(p->key, &p->value, cl);
     }
+  }
 }
 
 void *table_remove(T table, const void *key) {
@@ -125,7 +131,7 @@ void *table_remove(T table, const void *key) {
   struct binding **pp;
   table->timestamp++;
   i = (int)(*table->hash)(key)%table->size;
-  for (pp = &table->buckets[i]; *pp; pp = &(*pp)->link)
+  for (pp = &table->buckets[i]; *pp; pp = &(*pp)->link) {
     if ((*table->cmp)(key, (*pp)->key) == 0) {
       struct binding *p = *pp;
       void *value = p->value;
@@ -134,6 +140,7 @@ void *table_remove(T table, const void *key) {
       table->length--;
       return value;
     }
+  }
   return NULL;
 }
 
@@ -142,11 +149,12 @@ void **table_to_array(T table, void *end) {
   void **array;
   struct binding *p;
   array = malloc((2*table->length + 1)*sizeof (*array));
-  for (i = 0; i < table->size; i++)
+  for (i = 0; i < table->size; i++) {
     for (p = table->buckets[i]; p; p = p->link) {
       array[j++] = (void *)p->key;
       array[j++] = p->value;
     }
+  }
   array[j] = end;
   return array;
 }
@@ -155,11 +163,12 @@ void table_free(T *table) {
   if ((*table)->length > 0) {
     int i;
     struct binding *p, *q;
-    for (i = 0; i < (*table)->size; i++)
+    for (i = 0; i < (*table)->size; i++) {
       for (p = (*table)->buckets[i]; p; p = q) {
         q = p->link;
         free(p);
       }
+    }
   }
   free(*table);
 }

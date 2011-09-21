@@ -2,11 +2,6 @@
 #include "ruby.h"
 #include "table.h"
 
-#if !defined(RSTRING_LEN)
-# define RSTRING_LEN(x) (RSTRING(x)->len)
-# define RSTRING_PTR(x) (RSTRING(x)->ptr)
-#endif
-
 static int cmpstr(const void *x, const void *y) {
   return strcmp((char *)x, (char *)y);
 }
@@ -30,7 +25,7 @@ static VALUE cdict_new(VALUE self) {
 static VALUE cdict_include(VALUE self, VALUE key) {
   Table *t;
   Data_Get_Struct(self, Table, t);
-  int *val = table_get(*t, StringValueCStr(key));
+  void *val = table_get(*t, StringValueCStr(key));
   if (val) {
     return Qtrue;
   } else {
@@ -40,8 +35,8 @@ static VALUE cdict_include(VALUE self, VALUE key) {
 
 static VALUE cdict_add(VALUE self, VALUE key) {
   Table *t;
-  int v = 1;
   Data_Get_Struct(self, Table, t);
+  int v = 1;
   table_put(*t, StringValueCStr(key), &v);
   return Qnil;
 }
