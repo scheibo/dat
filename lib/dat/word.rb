@@ -2,7 +2,7 @@ require 'set'
 
 module Dat
   class Word
-    attr_reader :word
+    attr_reader :word, :relatives
     attr_accessor :definition, :type
     alias get word
 
@@ -15,10 +15,7 @@ module Dat
     def add_relative(word)
       @relatives.add word if word.get != @word
     end
-
-    def relatives
-      @relatives
-    end
+    alias << add_relative
 
     def isolate!
       @relatives.each { |r| r.relatives.delete self }

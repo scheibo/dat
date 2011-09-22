@@ -4,8 +4,7 @@ require 'word'
 module Dat
   class Dict
     def initialize(opt={})
-      # The internal hash which maps string words to Dat::Word objects
-      @dict = {}
+      @dict = {} # The internal hash which maps string words to Dat::Word objects
       file = opt[:file] || File.open(File.expand_path("../../../data/dict", __FILE__))
       bogus = opt[:bogus] || File.open(File.expand_path("../../../data/bogus", __FILE__))
       import file

@@ -12,8 +12,11 @@ module Dat
     WEIGHT_THRESHOLD = 0.7
     NUM_CHARS = 4
 
-    def initialize(logic)
+    def initialize(logic, opt={})
       @logic = logic
+
+      @max_depth = opt.fetch(:max_depth, MAX_PATH_DEPTH)
+      @max_distance = opt.fetch(:max_distance, MAX_ALLOWABLE_DISTANCE)
     end
 
     # Returns the distance between the start and the target. Note this is not

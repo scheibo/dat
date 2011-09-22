@@ -14,8 +14,6 @@ module Dat
         @transpose = opt.fetch(:transpose, false)
 
         @min_size = opt.fetch(:min_size, MIN_SIZE)
-        @max_depth = opt.fetch(:max_depth, MAX_PATH_DEPTH)
-        @max_distance = opt.fetch(:max_distance, MAX_ALLOWABLE_DISTANCE)
       end
 
       def select(word)
@@ -49,7 +47,7 @@ module Dat
         end
 
         if @transpose
-          (0..size).each do |i|
+          (0...size-1).each do |i|
             w = "#{wordstr[0,i]}#{wordstr[i+1]}#{wordstr[i]}#{wordstr[i+2,size-i-1]}"
             result << w if @dict[w] && !@used[w]
           end
@@ -63,7 +61,7 @@ module Dat
         m, n = s.size, t.size
         return (n == 0 ? 1.0 : 0.0) if m == 0
 
-        range = [0, ([m,n].max/2) - 1].max
+        range = [0, ([m,n].max / 2) - 1].max
 
         s_matched = Array.new m, false
         t_matched = Array.new n, false
@@ -74,8 +72,7 @@ module Dat
           fin = [i+range+1, n].min
           (start...fin).each do |j|
             next if t_matched[j] || s[i] != t[j]
-            s_matched[i] = true;
-            t_matched[j] = true;
+            s_matched[i], t_matched[j] = true, true
             common += 1
             break
           end
@@ -92,7 +89,7 @@ module Dat
         end
         transposed /= 2
 
-        weight = ((common.to_f/m) + (common.to_f/n) + ((common-transposed)/common.to_f))/3.0
+        weight = ((common.to_f/m) + (common.to_f/n) + ((common-transposed) / common.to_f)) / 3.0
         return weight if weight <= WEIGHT_THRESHOLD
 
         max = [NUM_CHARS, [m,n].min].min
@@ -124,19 +121,17 @@ module Dat
             j1 = db
             d = ( (s[i-1] == t[j-1]) ? 0 : 1)
             db = j if d == 0
-            h[i+1][j+1] = [ h[i][j]+d, h[i+1][j] + 1, h[i][j+1]+1,
-              h[i1][j1] + (i-i1-1) + 1 + (j-j1-1) ].min
+            h[i+1][j+1] = [ h[i][j] + d, h[i+1][j] + 1, h[i][j+1] + 1,
+                            h[i1][j1] + (i-i1-1) + 1 + (j-j1-1) ].min
           end
           da[s[i-1]] = i
         end
+
         h[m+1][n+1]
       end
 
       def leven(s, t)
         m, n = s.size, t.size
-        # for all i and j, d[i,j] will hold the Levenshtein distance between
-        # the first i characters of s and the first j characters of t;
-        # note that d has (m+1)x(n+1) values
         d = Array.new(m+1) { Array.new(n+1) }
 
         (0..m).each do |i|
@@ -151,7 +146,7 @@ module Dat
             if s[i-1] == t[j-1]
               d[i][j] = d[i-1][j-1]
             else
-              #               delete           insert             replace
+              #               delete             insert            replace
               d[i][j] = [ (d[i-1][j] + 1), (d[i][j-1] + 1), (d[i-1][j-1] + 1)].min
             end
           end
