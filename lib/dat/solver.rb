@@ -9,9 +9,6 @@ module Dat
     MAX_PATH_DEPTH = 5
     MAX_ALLOWABLE_DISTANCE = 2
 
-    WEIGHT_THRESHOLD = 0.7
-    NUM_CHARS = 4
-
     def initialize(logic, opt={})
       @logic = logic
 

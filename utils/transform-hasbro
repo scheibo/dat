@@ -1,0 +1,95 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib/dat', __FILE__)
+require 'word'
+require 'dict'
+include Dat
+
+$realdict = Dict.new
+$dict = {}
+
+BRACKET_REGEX = /\[.*\]/
+CAPS_REGEX = /([A-Z]{3,})/
+PLURAL_REGEX = /pl\.\sof\s(.*)\s/
+BAD_U_MISTAKE = /--(u[A-Z]+)\W/
+
+# helper that has a heurstic to only add the relatives if they meet a certain condition
+def relatives(*words)
+  # make a set of all the relatives
+  relatives = Set.new
+  words.each do |word|
+    word.relatives.each { |rs| relatives.add(rs) }
+    relatives.add(word)
+  end
+
+  # update words to include the full list of relatives
+  words.each do |word|
+    relatives.each { |r| word.add_relative(r) if word.get[0,2] == r.get[0,2]}
+  end
+end
+
+def transform(infile, outfile)
+  infile.each_line do |line|
+    space = line.index " "
+
+    if space
+      word, defn = line[0...space], line[space+1..line.size].chomp
+    else
+      $dict[word.upcase] = Word.new(word)
+      next
+    end
+
+    check_for_plurals word, defn
+    check_for_caps word, defn
+
+    if defn =~ BAD_U_MISTAKE
+      w = $~[1].upcase
+      g(word).relatives.delete(g(w[1,w.size]))
+      relatives(g(word),g(w))
+    end
+
+    set_definition word, defn
+  end
+
+  redo_all_definitions!
+
+  $dict.each { |k,v| outfile.puts v.to_dict_entry unless v.definition.empty? && v.relatives.empty? }
+end
+
+def redo_all_definitions!
+  $dict.each do |k,v|
+    if v.definition.empty? && v.relatives
+      largest = v.relatives.max_by { |r| r.definition =~ /\<.*\>/ ? 0 : r.definition.size }
+      v.definition = "<#{largest.get}: #{largest.definition}>" if largest
+    end
+  end
+end
+
+def set_definition(word, defn)
+  # remove expressions we don't want in the final expression
+  defn = defn.gsub(/\[.*\]/, "").gsub(/\s+/, " ")
+  g(word).definition = defn.strip
+  if $realdict[word] && $realdict[word].type
+    g(word).type = $realdict[word].type
+  end
+end
+
+def g(word)
+  $dict[word.upcase] ||= Word.new(word)
+end
+
+def check_for_plurals(word, defn)
+  relatives(g(word), g($~[1])) if defn =~ PLURAL_REGEX
+end
+
+def check_for_caps(word, defn)
+  return unless defn =~ BRACKET_REGEX
+  dfn = $~[0]
+  matches = []
+  while (idx = (dfn =~ CAPS_REGEX))
+    matches << $~[1]
+    dfn = dfn[idx+$~.to_s.size..dfn.size]
+  end
+  relatives(*(matches.map {|w| g(w)}), g(word))
+end
+
+transform File.open('scrabble-output'), File.open('scrabble-hasbro.dict', 'w')

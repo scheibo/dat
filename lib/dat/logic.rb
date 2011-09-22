@@ -4,6 +4,9 @@ module Dat
 
       MIN_SIZE = 3
 
+      WEIGHT_THRESHOLD = 0.7
+      NUM_CHARS = 4
+
       def initialize(dict, opt={})
         @dict = dict
         @used = {}

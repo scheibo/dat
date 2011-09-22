@@ -4,7 +4,7 @@ require 'dat'
 include Dat
 
 def relative_unreachable(infile, outfile)
-  dict = Dict.new(infile)
+  dict = Dict.new(:file => infile)
 
   dict.each do |k,v|
     results = Logic.perturb(k, dict)
@@ -17,4 +17,4 @@ def relative_unreachable(infile, outfile)
 end
 
 
-relative_unreachable 'nounreachable.txt', '../data/norelativereachable.txt'
+relative_unreachable File.open('../data/nounreachable.txt'), '../data/norelativereachable.txt'
