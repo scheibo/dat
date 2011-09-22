@@ -1,43 +1,79 @@
 #!/usr/bin/env ruby
 $: << File.expand_path('../../lib', __FILE__)
 require 'dat'
-require './rb-logic'
 require 'tach'
+include Dat
 
-d = Dat::Dict.new
-Tach.meter(10000) do
-  tach('c-logic') do
-    Dat::Logic.perturb('DAT', d)
-  end
-  tach('rb-logic') do
-    RbDat::Logic.perturb('DAT', d)
-  end
+$clogic = Logic.new
+$rblogic = Pure::Logic.new
+
+d = Dict.new
+
+def rand_word
+  (0...8).map{65.+(rand(25)).chr}.join
 end
-=begin
+
 Tach.meter(10000) do
-  tach('c-logic') do
-    s = (0...8).map{65.+(rand(25)).chr}.join
-    t = (0...8).map{65.+(rand(25)).chr}.join
-    Dat::Logic.damlev(s,t)
+
+  # perturb
+
+  tach('c-logic random perturb') do
+    $clogic.perturb(rand_word, d)
   end
-  tach('rb-logic') do
-    s = (0...8).map{65.+(rand(25)).chr}.join
-    t = (0...8).map{65.+(rand(25)).chr}.join
-    RbDat::Logic.damlev(s,t)
+
+  tach('rb-logic random perturb') do
+    $rblogic.perturb(rand_word, d)
   end
+
+  tach('c-logic perturb') do
+    $clogic.perturb('DAT', d)
+  end
+
+  tach('rb-logic perturb') do
+    $rblogic.perturb('DAT', d)
+  end
+
+  # leven
+
+  tach('c-logic random leven') do
+    $clogic.leven(rand_word, rand_word)
+  end
+  tach('rb-logic random leven') do
+    $rblogic.leven(rand_word, rand_word)
+  end
+
+  tach('c-logic leven') do
+    [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
+      @clogic.leven *a
+    end
+  end
+
+  tach('rb-logic leven') do
+    [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
+      @rblogic.leven *a
+    end
+  end
+
+  # damlev
+
+  tach('c-logic random damlev') do
+    $clogic.damlev(rand_word, rand_word)
+  end
+  tach('rb-logic random damlev') do
+    $rblogic.damlev(rand_word, rand_word)
+  end
+
+  tach('c-logic damlev') do
+    [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
+      @clogic.damlev *a
+    end
+  end
+
+  tach('rb-logic damlev') do
+    [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
+      @rblogic.damlev *a
+    end
+  end
+
 end
-Tach.meter(10000) do
-  tach('c-logic') do
-    Dat::Logic.damlev 'CA', 'ABC' # => 2
-    Dat::Logic.damlev 'TEUSDAY', 'TUESDAY' # => 1
-    Dat::Logic.damlev 'TEUSDAY', 'THRUSDAY' # => 2
-    Dat::Logic.damlev 'TUESDAY', 'SOMETHING' # => 8
-  end
-  tach('rb-logic') do
-    RbDat::Logic.damlev 'CA', 'ABC' # => 2
-    RbDat::Logic.damlev 'TEUSDAY', 'TUESDAY' # => 1
-    RbDat::Logic.damlev 'TEUSDAY', 'THRUSDAY' # => 2
-    RbDat::Logic.damlev 'TUESDAY', 'SOMETHING' # => 8
-  end
-end
-=end
+
