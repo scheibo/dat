@@ -4,12 +4,14 @@ require 'dat'
 include Dat
 
 ## Insert code to run
-#d = Dict.new
+d = Dict.new
 
-c = CDict.new
-c.add 'HELLO'
-c.add 'GOODBYE'
-c.include? 'HELLO'
+p Logic.perturb('AAHING', d)
+
+#c = CDict.new
+#c.add 'HELLO'
+#c.add 'GOODBYE'
+#c.include? 'HELLO'
 =begin
 d.each do |k,v|
   c.add k

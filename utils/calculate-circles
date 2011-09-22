@@ -1,0 +1,31 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+include Dat
+
+def relative_unreachable(infile, outfile)
+  dict = Dict.new(:file => infile)
+
+  dict.each do |k,v|
+    neighbors = Logic.perturb(k, dict)
+
+    n2 = Set.new
+    neighbors.each do |n|
+      Logic.perturb(n.get, dict).map { |e| n2.add(e) }
+    end
+
+    neighbors << v
+    if n2.difference(neighbors).empty?
+      # we have a circle, remove all of the neighbours
+      neighbors.each do |n|
+        # TODO worry that removing stuff makes other things no longer good?
+        dict.delete(n)
+      end
+    end
+  end
+
+  File.open(outfile, 'w').puts dict
+end
+
+
+relative_unreachable File.open('../data/norelativereachable.txt'), '../data/nocircles.txt'
