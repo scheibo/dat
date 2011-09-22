@@ -4,9 +4,19 @@ require 'dat'
 include Dat
 
 ## Insert code to run
-d = Dict.new
+l = Logic.new({})
+r = Pure::Logic.new({})
 
-p Logic.perturb('AAHING', d)
+p l.jaro_winkler('MARTHA', 'MARHTA')
+p r.jaro_winkler('MARTHA', 'MARHTA')
+
+=begin
+p l.perturb('DAT')
+p l.damlev('LOAKJD', 'OLHDJH')
+p l.leven('LOAKJD', 'OLHDJH')
+p l.jaro_winkler('ASJDK', 'ADHAD')
+=end
+
 
 #c = CDict.new
 #c.add 'HELLO'
