@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include "table.h"
 
-#define T Table
 struct T {
   int size;
   int (*cmp)(const void *x, const void *y);
@@ -48,10 +47,10 @@ static unsigned long hashatom(const void *key) {
   return (unsigned long) key >> 2;
 }
 
-T table_new(int hint,
+Table table_new(int hint,
     int cmp(const void *x, const void *y),
     unsigned long hash(const void *key)) {
-  T table;
+  Table table;
   int i;
   static int primes[] = { 509, 509, 1021, 2053, 4093,
     8191, 16381, 32771, 65521, 131071, 262139, 524287,
@@ -70,7 +69,7 @@ T table_new(int hint,
   return table;
 }
 
-void *table_get(T table, const void *key) {
+void *table_get(Table table, const void *key) {
   int i;
   struct binding *p;
   i = (int)(*table->hash)(key)%table->size;
@@ -83,7 +82,7 @@ void *table_get(T table, const void *key) {
   return p ? p->value : NULL;
 }
 
-void *table_put(T table, const void *key, void *value) {
+void *table_put(Table table, const void *key, void *value) {
   int i;
   struct binding *p;
   void *prev;
@@ -108,11 +107,11 @@ void *table_put(T table, const void *key, void *value) {
   return prev;
 }
 
-int table_length(T table) {
+int table_length(Table table) {
   return table->length;
 }
 
-void table_map(T table,
+void table_map(Table table,
     void apply(const void *key, void **value, void *cl),
     void *cl) {
   int i;
@@ -126,7 +125,7 @@ void table_map(T table,
   }
 }
 
-void *table_remove(T table, const void *key) {
+void *table_remove(Table table, const void *key) {
   int i;
   struct binding **pp;
   table->timestamp++;
@@ -144,7 +143,7 @@ void *table_remove(T table, const void *key) {
   return NULL;
 }
 
-void **table_to_array(T table, void *end) {
+void **table_to_array(Table table, void *end) {
   int i, j = 0;
   void **array;
   struct binding *p;
@@ -159,7 +158,7 @@ void **table_to_array(T table, void *end) {
   return array;
 }
 
-void table_free(T *table) {
+void table_free(Table *table) {
   if ((*table)->length > 0) {
     int i;
     struct binding *p, *q;

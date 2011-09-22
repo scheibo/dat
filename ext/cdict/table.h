@@ -23,20 +23,18 @@
 
 #ifndef TABLE_H
 #define TABLE_H
-#define T Table
-typedef struct T *T;
-extern T table_new(int hint,
+typedef struct T *Table;
+extern Table table_new(int hint,
   int cmp(const void *x, const void *y),
   unsigned long hash(const void *key));
-extern void table_free(T *table);
-extern int table_length(T table);
-extern void *table_put(T table, const void *key,
+extern void table_free(Table *table);
+extern int table_length(Table table);
+extern void *table_put(Table table, const void *key,
   void *value);
-extern void *table_get(T table, const void *key);
-extern void *table_remove(T table, const void *key);
-extern void table_map(T table,
+extern void *table_get(Table table, const void *key);
+extern void *table_remove(Table table, const void *key);
+extern void table_map(Table table,
   void apply(const void *key, void **value, void *cl),
   void *cl);
-extern void **table_to_array(T table, void *end);
-#undef T
+extern void **table_to_array(Table table, void *end);
 #endif
