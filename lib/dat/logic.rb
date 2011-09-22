@@ -9,7 +9,6 @@ module Dat
 
       def initialize(dict, opt={})
         @dict = dict
-        @used = {}
 
         @add = opt.fetch(:add, true)
         @replace = opt.fetch(:replace, true)
@@ -19,31 +18,26 @@ module Dat
         @min_size = opt.fetch(:min_size, MIN_SIZE)
       end
 
-      def select(word)
-        @used << word
-        @used << word.relatives.to_a
-      end
-
-      def perturb(wordstr)
+      def perturb(wordstr, used={})
         size = wordstr.size
         result = []
 
         if @add
           (0..size).each do |i|
-            try_letters(wordstr[0,i], wordstr[i,size], wordstr, result)
+            try_letters(wordstr[0,i], wordstr[i,size], wordstr, used, result)
           end
         end
 
         if @replace
           (0...size).each do |i|
-            try_letters(wordstr[0,i], wordstr[i+1,size], wordstr,  result)
+            try_letters(wordstr[0,i], wordstr[i+1,size], wordstr, used, result)
           end
         end
 
         if @delete
           (0...size).each do |i|
             w = "#{wordstr[0,i]}#{wordstr[i+1,size]}"
-            if @dict[w] && !@used[w] && size > @min_size
+            if @dict[w] && !used[w] && size > @min_size
               result << @dict[w]
             end
           end
@@ -52,7 +46,7 @@ module Dat
         if @transpose
           (0...size-1).each do |i|
             w = "#{wordstr[0,i]}#{wordstr[i+1]}#{wordstr[i]}#{wordstr[i+2,size-i-1]}"
-            result << w if @dict[w] && !@used[w]
+            result << w if @dict[w] && !used[w]
           end
         end
 
@@ -160,10 +154,10 @@ module Dat
 
       private
 
-      def try_letters(start, finish, wordstr, result)
+      def try_letters(start, finish, wordstr, used, result)
         ('A'..'Z').each do |c|
           w = "#{start}#{c}#{finish}"
-          result << @dict[w] if @dict[w] && !@used[w] && w != wordstr
+          result << @dict[w] if @dict[w] && !used[w] && w != wordstr
         end
       end
     end
