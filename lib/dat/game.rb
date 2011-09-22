@@ -41,7 +41,7 @@ module Dat
     end
 
     def play(word)
-      raise InvalidMove if @won
+      raise InvalidMove, "Game has already been won" if @won
       # @dict[word] && @logic.perturb(@last, @used).include?(word)
       if @dict[word] && !@used[word] && @logic.leven(word, @last) == 1
         @last = word
@@ -50,9 +50,9 @@ module Dat
         @dict[word].relatives.map { |r| @used[r] = true }
 
         # check if winning
-        @won = true && raise WinningMove if @logic.perturb(@last, @used).empty?
+        @won = true && raise WinningMove, "Player #{whos_turn-1} wins" if @logic.perturb(@last, @used).empty?
       else
-        raise InvalidMove
+        raise InvalidMove, "Move is invalid"
       end
     end
 
