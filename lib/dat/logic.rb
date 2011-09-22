@@ -2,18 +2,11 @@ module Dat
   module Pure
     class Logic
 
-      class Stop < Exception; end
-
-      MAX_PATH_DEPTH = 5
-      MAX_ALLOWABLE_DISTANCE = 2
       MIN_SIZE = 3
 
-      WEIGHT_THRESHOLD = 0.7
-      NUM_CHARS = 4
-
-      def initialize(dict={}, opt={})
+      def initialize(dict, opt={})
         @dict = dict
-        @selected = {}
+        @used = {}
 
         @add = opt.fetch(:add, true)
         @replace = opt.fetch(:replace, true)
@@ -26,32 +19,39 @@ module Dat
       end
 
       def select(word)
-        @selected << word
-        @selected << word.relatives.to_a
+        @used << word
+        @used << word.relatives.to_a
       end
 
-      def perturb(word)
-        # TODO should relative logic be placed into perturb?
-        size = word.size
+      def perturb(wordstr)
+        size = wordstr.size
         result = []
+
         if @add
           (0..size).each do |i|
-            try_letters(word[0,i], word[i,size], word, result)
+            try_letters(wordstr[0,i], wordstr[i,size], wordstr, result)
           end
         end
 
         if @replace
           (0...size).each do |i|
-            try_letters(word[0,i], word[i+1,size], word, result)
+            try_letters(wordstr[0,i], wordstr[i+1,size], wordstr,  result)
           end
         end
 
         if @delete
           (0...size).each do |i|
-            w = "#{word[0,i]}#{word[i+1,size]}".upcase
-            if @dict[w] && size > @min_size
+            w = "#{wordstr[0,i]}#{wordstr[i+1,size]}"
+            if @dict[w] && !@used[w] && size > @min_size
               result << @dict[w]
             end
+          end
+        end
+
+        if @transpose
+          (0..size).each do |i|
+            w = "#{wordstr[0,i]}#{wordstr[i+1]}#{wordstr[i]}#{wordstr[i+2,size-i-1]}"
+            result << w if @dict[w] && !@used[w]
           end
         end
 
@@ -160,64 +160,12 @@ module Dat
         d[m][n]
       end
 
-      # Returns the distance between the start and the target. Note this is not
-      # the minimum distance, merely a distance
-      def distance(start, target)
-        pth = path(start, target, nil, [])
-        pth.size if pth
-      end
-
-      # Try to find a path between two words simply by perturbing them. This does
-      # not guarantee the *shortest* path, it simply attempts to find a path. The
-      # orig_dist parameter helps short circuit our effort if we ever get too far
-      # away from the goal. To be extra safe it is important to timeout this
-      # function, using an actual interval of time.
-      def path(start, target, orig_dist=nil, result=[])
-        # TODO need to worry about the RELATIVES of every word we have chosen.
-        orig_dist ||= leven(start.get.upcase, target.get.upcase)
-
-        p [start, target, result]
-
-        # We need to stop recursion after a while so we don't end up going through
-        # the entire dictionary
-        raise Stop if result.size >= @max_depth
-        # We also want to stop if we start to get too far away from the word we
-        # are targeting. While it is possible we could eventually get to our
-        # target, it is more unlikely the further away from it that we get.
-        raise Stop if (leven(start.word.upcase, target.word.upcase) - orig_dist) > @max_distanc
-
-        result << start
-        # short circuit if we happen to have the case where start is the target
-        return result if start.word.upcase == target.word.upcase
-
-        # The heuristic we use is to sort by the Levenshtein distance, as we
-        # assume those words with a closer edit distance are likely closer to the
-        # target word.
-        # This should be parallelizable - if we do spawn a thread for each
-        # perturbed word, other than quickly running out of threads, the
-        # levenshtein distance calculation is a lot less necessary.
-        perturb(start.get).sort_by { |w| leven(w.get.upcase, target.get.upcase) }.each do |word|
-          if !result.include?(word)
-            begin
-              pth = path(word, target, orig_dist, result.clone)
-              return pth if pth
-            rescue Stop
-              break
-            end
-          end
-        end
-
-        # if we get here then the was no path from start to target so we simply
-        # return nothing which will end up being nil
-        nil
-      end
-
       private
 
-      def try_letters(start, finish, word, result)
+      def try_letters(start, finish, wordstr, result)
         ('A'..'Z').each do |c|
-          w = "#{start}#{c}#{finish}".upcase
-          result << @dict[w] if @dict[w] and w != word.upcase
+          w = "#{start}#{c}#{finish}"
+          result << @dict[w] if @dict[w] && !@used[w] && w != wordstr
         end
       end
     end

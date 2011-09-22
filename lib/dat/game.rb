@@ -1,3 +1,7 @@
-$:.unshift(File.expand_path('../dat', __FILE__))
+$:.unshift(File.expand_path('../../dat', __FILE__)) unless $:.include?(File.expand_path('../../dat', __FILE__))
+require 'solver'
 
-#require 'solver'
+module Dat
+  class Game
+  end
+end
