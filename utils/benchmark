@@ -12,10 +12,9 @@ def rand_word
   (0...8).map{65.+(rand(25)).chr}.join
 end
 
+# perturb
+#
 Tach.meter(10000) do
-
-  # perturb
-
   tach('c-logic random perturb') do
     $clogic.perturb(rand_word)
   end
@@ -23,7 +22,9 @@ Tach.meter(10000) do
   tach('rb-logic random perturb') do
     $rblogic.perturb(rand_word)
   end
+end
 
+Tach.meter(10000) do
   tach('c-logic perturb') do
     $clogic.perturb('DAT')
   end
@@ -31,16 +32,20 @@ Tach.meter(10000) do
   tach('rb-logic perturb') do
     $rblogic.perturb('DAT')
   end
+end
 
-  # leven
+# leven
 
+Tach.meter(10000) do
   tach('c-logic random leven') do
     $clogic.leven(rand_word, rand_word)
   end
   tach('rb-logic random leven') do
     $rblogic.leven(rand_word, rand_word)
   end
+end
 
+Tach.meter(10000) do
   tach('c-logic leven') do
     [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
       $clogic.leven *a
@@ -52,16 +57,20 @@ Tach.meter(10000) do
       $rblogic.leven *a
     end
   end
+end
 
-  # damlev
+# damlev
 
+Tach.meter(10000) do
   tach('c-logic random damlev') do
     $clogic.damlev(rand_word, rand_word)
   end
   tach('rb-logic random damlev') do
     $rblogic.damlev(rand_word, rand_word)
   end
+end
 
+Tach.meter(10000) do
   tach('c-logic damlev') do
     [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
       $clogic.damlev *a
@@ -73,6 +82,28 @@ Tach.meter(10000) do
       $rblogic.damlev *a
     end
   end
+end
 
+Tach.meter(10000) do
+  tach('c-logic random jaro') do
+    $clogic.jaro_winkler(rand_word, rand_word)
+  end
+  tach('rb-logic random jaro') do
+    $rblogic.jaro_winkler(rand_word, rand_word)
+  end
+end
+
+Tach.meter(10000) do
+  tach('c-logic jaro') do
+    [['MARTHA', 'MARHTA'], ['DWAYNE', 'DUANE'], ['DIXON', 'DICKSONX'], ['DIXON', 'DIXON']].each do |a|
+      $clogic.jaro_winkler *a
+    end
+  end
+
+  tach('rb-logic jaro') do
+    [['MARTHA', 'MARHTA'], ['DWAYNE', 'DUANE'], ['DIXON', 'DICKSONX'], ['DIXON', 'DIXON']].each do |a|
+      $rblogic.jaro_winkler *a
+    end
+  end
 end
 
