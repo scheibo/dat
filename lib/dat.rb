@@ -1,6 +1,5 @@
 module Dat; end
 
-#require 'cdict'
 require 'logic'
 require 'dat/version'
 require 'dat/dict'
