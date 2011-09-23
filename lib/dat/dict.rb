@@ -12,7 +12,8 @@ module Dat
     end
 
     def [](word)
-      @dict[word.upcase]
+      #@dict[word.upcase]
+      @dict[word]
     end
 
     def each(&block)

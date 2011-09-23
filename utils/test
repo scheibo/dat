@@ -1,36 +1,23 @@
 #!/usr/bin/env ruby
 $: << File.expand_path('../../lib', __FILE__)
 require 'dat'
+require 'ruby-prof'
 include Dat
-
+d = Dict.new
 ## Insert code to run
-l = Logic.new({})
-r = Pure::Logic.new({})
+c = Logic.new(d)
+r = Pure::Logic.new(d)
 
-p l.jaro_winkler('MARTHA', 'MARHTA')
-p r.jaro_winkler('MARTHA', 'MARHTA')
-
-=begin
-p l.perturb('DAT')
-p l.damlev('LOAKJD', 'OLHDJH')
-p l.leven('LOAKJD', 'OLHDJH')
-p l.jaro_winkler('ASJDK', 'ADHAD')
-=end
-
-
-#c = CDict.new
-#c.add 'HELLO'
-#c.add 'GOODBYE'
-#c.include? 'HELLO'
-=begin
-d.each do |k,v|
-  c.add k
+result = RubyProf.profile do
+  r.perturb('DAT')
 end
 
-c.delete 'AAH'
-c.delete 'AAL'
+printer = RubyProf::FlatPrinter.new(result)
+printer.print(STDOUT, :min_percent =>0)
 
-d.each do |k, v|
- p c.include? k
+result = RubyProf.profile do
+  c.perturb('DAT')
 end
-=end
+
+printer = RubyProf::FlatPrinter.new(result)
+printer.print(STDOUT, :min_percent =>0)

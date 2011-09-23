@@ -19,11 +19,6 @@ describe Dat::Logic do
       @log.perturb('DAT').sort_by(&:get).should == @plog.perturb('DAT').sort_by(&:get)
       @log.perturb('WALKED').sort_by(&:get).should == @plog.perturb('WALKED').sort_by(&:get)
     end
-
-    it "should behave the same for upper and lower case" do
-      @log.perturb('DAT').should == @log.perturb('dat')
-      @plog.perturb('DAT').should == @plog.perturb('dat')
-    end
   end
 
   context "#damlev" do
