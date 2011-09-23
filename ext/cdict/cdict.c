@@ -53,6 +53,7 @@ static unsigned long hashstr(const void *key) {
   while (c = *str++)
     hash = ((hash << 5) + hash) + c;
 
+
   return hash;
 }
 
@@ -81,7 +82,7 @@ Table table_new(int hint,
 void *table_get(Table table, const void *key) {
   int i;
   struct binding *p;
-  i = (int)(*table->hash)(key)%table->size;
+  i = (int)((*table->hash)(key)%table->size);
   for (p = table->buckets[i]; p; p = p->link) {
     if ((*table->cmp)(key, p->key) == 0) {
       break;
@@ -95,7 +96,7 @@ void *table_put(Table table, const void *key, void *value) {
   int i;
   struct binding *p;
   void *prev;
-  i = (int)(*table->hash)(key)%table->size;
+  i = (int)((*table->hash)(key)%table->size);
   for (p = table->buckets[i]; p; p = p->link) {
     if ((*table->cmp)(key, p->key) == 0) {
       break;
@@ -120,7 +121,7 @@ void *table_remove(Table table, const void *key) {
   int i;
   struct binding **pp;
   table->timestamp++;
-  i = (int)(*table->hash)(key)%table->size;
+  i = (int)((*table->hash)(key)%table->size);
   for (pp = &table->buckets[i]; *pp; pp = &(*pp)->link) {
     if ((*table->cmp)(key, (*pp)->key) == 0) {
       struct binding *p = *pp;
@@ -150,7 +151,9 @@ void table_free(Table *table) {
 
 static VALUE cdict_new(VALUE self) {
   Table t = table_new(0, cmpstr, hashstr); /* TODO change hint to larger */
-  return Data_Wrap_Struct(self, NULL, table_free, &t);
+  VALUE obj = Data_Wrap_Struct(self, NULL, table_free, &t);
+  return obj;
+
 }
 
 static VALUE cdict_include(VALUE self, VALUE key) {

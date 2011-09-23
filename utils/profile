@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+require 'ruby-prof'
+include Dat
+d = Dict.new
+## Insert code to run
+c = Logic.new(d)
+r = Pure::Logic.new(d)
+
+result = RubyProf.profile do
+  r.perturb('DAT')
+end
+
+printer = RubyProf::FlatPrinter.new(result)
+printer.print(STDOUT, :min_percent =>0)
+
+result = RubyProf.profile do
+  c.perturb('DAT')
+end
+
+printer = RubyProf::FlatPrinter.new(result)
+printer.print(STDOUT, :min_percent =>0)

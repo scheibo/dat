@@ -3,21 +3,17 @@ $: << File.expand_path('../../lib', __FILE__)
 require 'dat'
 require 'ruby-prof'
 include Dat
-d = Dict.new
 ## Insert code to run
-c = Logic.new(d)
-r = Pure::Logic.new(d)
+c = CDict.new
 
-result = RubyProf.profile do
-  r.perturb('DAT')
-end
-
-printer = RubyProf::FlatPrinter.new(result)
-printer.print(STDOUT, :min_percent =>0)
-
-result = RubyProf.profile do
-  c.perturb('DAT')
-end
-
-printer = RubyProf::FlatPrinter.new(result)
-printer.print(STDOUT, :min_percent =>0)
+c.add('HELLO')
+c.add('GOODBYE')
+c.add('SUPDAWG')
+#p c.include?('GOODBYE')
+=begin
+p c.include?('HELL')
+c.delete('GOODBYE')
+p c.include?('GOODBYE')
+c.add('FACE')
+p c.include?('FACE')
+=end
