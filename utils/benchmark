@@ -4,10 +4,9 @@ require 'dat'
 require 'tach'
 include Dat
 
-$clogic = Logic.new
-$rblogic = Pure::Logic.new
-
 d = Dict.new
+$clogic = Logic.new d
+$rblogic = Pure::Logic.new d
 
 def rand_word
   (0...8).map{65.+(rand(25)).chr}.join
@@ -18,19 +17,19 @@ Tach.meter(10000) do
   # perturb
 
   tach('c-logic random perturb') do
-    $clogic.perturb(rand_word, d)
+    $clogic.perturb(rand_word)
   end
 
   tach('rb-logic random perturb') do
-    $rblogic.perturb(rand_word, d)
+    $rblogic.perturb(rand_word)
   end
 
   tach('c-logic perturb') do
-    $clogic.perturb('DAT', d)
+    $clogic.perturb('DAT')
   end
 
   tach('rb-logic perturb') do
-    $rblogic.perturb('DAT', d)
+    $rblogic.perturb('DAT')
   end
 
   # leven
@@ -44,13 +43,13 @@ Tach.meter(10000) do
 
   tach('c-logic leven') do
     [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
-      @clogic.leven *a
+      $clogic.leven *a
     end
   end
 
   tach('rb-logic leven') do
     [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
-      @rblogic.leven *a
+      $rblogic.leven *a
     end
   end
 
@@ -65,13 +64,13 @@ Tach.meter(10000) do
 
   tach('c-logic damlev') do
     [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
-      @clogic.damlev *a
+      $clogic.damlev *a
     end
   end
 
   tach('rb-logic damlev') do
     [['CA', 'ABC'], ['TEUSDAY', 'TUESDAY'], ['TEUSDAY', 'THURSDAY'], ['TUESDAY', 'SOMETHING']].each do |a|
-      @rblogic.damlev *a
+      $rblogic.damlev *a
     end
   end
 

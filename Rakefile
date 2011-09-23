@@ -6,5 +6,4 @@ require 'rake/extensiontask'
 
 Bundler::GemHelper.install_tasks
 RSpec::Core::RakeTask.new(:spec)
-Rake::ExtensionTask.new("cdict")
 Rake::ExtensionTask.new("logic")
