@@ -4,7 +4,7 @@ require 'logic'
 
 module Dat
 
-  class Move < RuntimeException; end
+  class Move < RuntimeError; end
   class InvalidMove < Move; end
   class WinningMove < Move; end
 
@@ -13,7 +13,7 @@ module Dat
     START_WORD = 'dat'
 
     attr_reader :played, :used
-    alias played history
+    alias history played
 
     def initialize(num_players=2, start=nil)
       @num_players = num_players
@@ -50,7 +50,10 @@ module Dat
         @dict[word].relatives.map { |r| @used[r] = true }
 
         # check if winning
-        @won = true && raise WinningMove, "Player #{whos_turn-1} wins" if @logic.perturb(@last, @used).empty?
+        if @logic.perturb(@last, @used).empty?
+          @won = true
+          raise WinningMove, "Player #{whos_turn-1} wins"
+        end
       else
         raise InvalidMove, "Move is invalid"
       end
