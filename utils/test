@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 $: << File.expand_path('../../lib', __FILE__)
 require 'dat'
-require 'ruby-prof'
 include Dat
 ## Insert code to run
 c = CDict.new
@@ -9,11 +8,9 @@ c = CDict.new
 c.add('HELLO')
 c.add('GOODBYE')
 c.add('SUPDAWG')
-#p c.include?('GOODBYE')
-=begin
+p c.include?('GOODBYE')
 p c.include?('HELL')
 c.delete('GOODBYE')
 p c.include?('GOODBYE')
 c.add('FACE')
 p c.include?('FACE')
-=end

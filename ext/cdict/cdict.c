@@ -27,16 +27,16 @@
 #include <string.h>
 #include "ruby.h"
 
+#include <stdio.h>
+
 struct T {
   int size;
   int (*cmp)(const void *x, const void *y);
   unsigned long (*hash)(const void *key);
   int length;
-  unsigned timestamp;
   struct binding {
     struct binding *link;
     const void *key;
-    void *value;
   } **buckets;
 };
 typedef struct T *Table;
@@ -75,11 +75,10 @@ Table table_new(int hint,
   for (i = 0; i < table->size; i++)
     table->buckets[i] = NULL;
   table->length = 0;
-  table->timestamp = 0;
   return table;
 }
 
-void *table_get(Table table, const void *key) {
+char table_get(Table table, const void *key) {
   int i;
   struct binding *p;
   i = (int)((*table->hash)(key)%table->size);
@@ -89,13 +88,13 @@ void *table_get(Table table, const void *key) {
     }
   }
 
-  return p ? p->value : NULL;
+  return p ? 1 : 0;
 }
 
-void *table_put(Table table, const void *key, void *value) {
+char table_put(Table table, const void *key) {
   int i;
   struct binding *p;
-  void *prev;
+  char prev;
   i = (int)((*table->hash)(key)%table->size);
   for (p = table->buckets[i]; p; p = p->link) {
     if ((*table->cmp)(key, p->key) == 0) {
@@ -108,77 +107,67 @@ void *table_put(Table table, const void *key, void *value) {
     p->link = table->buckets[i];
     table->buckets[i] = p;
     table->length++;
-    prev = NULL;
+    prev = 0;
   } else {
-    prev = p->value;
+    prev = 1;
   }
-  p->value = value;
-  table->timestamp++;
   return prev;
 }
 
-void *table_remove(Table table, const void *key) {
+char table_remove(Table table, const void *key) {
   int i;
   struct binding **pp;
-  table->timestamp++;
   i = (int)((*table->hash)(key)%table->size);
   for (pp = &table->buckets[i]; *pp; pp = &(*pp)->link) {
     if ((*table->cmp)(key, (*pp)->key) == 0) {
       struct binding *p = *pp;
-      void *value = p->value;
       *pp = p->link;
       free(p);
       table->length--;
-      return value;
+      return 1;
     }
   }
-  return NULL;
+  return 0;
 }
 
-void table_free(Table *table) {
-  if ((*table)->length > 0) {
+void table_free(Table table) {
+  if (table->length > 0) {
     int i;
     struct binding *p, *q;
-    for (i = 0; i < (*table)->size; i++) {
-      for (p = (*table)->buckets[i]; p; p = q) {
+    for (i = 0; i < table->size; i++) {
+      for (p = table->buckets[i]; p; p = q) {
         q = p->link;
         free(p);
       }
     }
   }
-  free(*table);
+  free(table);
 }
 
 static VALUE cdict_new(VALUE self) {
   Table t = table_new(0, cmpstr, hashstr); /* TODO change hint to larger */
-  VALUE obj = Data_Wrap_Struct(self, NULL, table_free, &t);
+  VALUE obj = Data_Wrap_Struct(self, NULL, table_free, t);
   return obj;
 
 }
 
 static VALUE cdict_include(VALUE self, VALUE key) {
-  Table *t;
-  Data_Get_Struct(self, Table, t);
-  void *val = table_get(*t, StringValueCStr(key));
-  if (val) {
-    return Qtrue;
-  } else {
-    return Qnil;
-  }
+  Table t;
+  Data_Get_Struct(self, struct T, t);
+  return (table_get(t, StringValueCStr(key)) ? Qtrue : Qfalse);
 }
 
 static VALUE cdict_add(VALUE self, VALUE key) {
-  Table *t;
-  Data_Get_Struct(self, Table, t);
-  int v = 1;
-  table_put(*t, StringValueCStr(key), &v);
+  Table t;
+  Data_Get_Struct(self, struct T, t);
+  table_put(t, StringValueCStr(key));
   return Qnil;
 }
 
 static VALUE cdict_delete(VALUE self, VALUE key) {
-  Table *t;
-  Data_Get_Struct(self, Table, t);
-  table_remove(*t, StringValueCStr(key));
+  Table t;
+  Data_Get_Struct(self, struct T, t);
+  table_remove(t, StringValueCStr(key));
   return Qnil;
 }
 
