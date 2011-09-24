@@ -27,7 +27,7 @@
 #include <string.h>
 #include "ruby.h"
 
-#include <stdio.h>
+#define BASE_HINT 100000
 
 struct T {
   int size;
@@ -52,7 +52,6 @@ static unsigned long hashstr(const void *key) {
 
   while (c = *str++)
     hash = ((hash << 5) + hash) + c;
-
 
   return hash;
 }
@@ -145,7 +144,7 @@ void table_free(Table table) {
 }
 
 static VALUE cdict_new(VALUE self) {
-  Table t = table_new(0, cmpstr, hashstr); /* TODO change hint to larger */
+  Table t = table_new(BASE_HINT, cmpstr, hashstr); /* TODO change hint to larger */
   VALUE obj = Data_Wrap_Struct(self, NULL, table_free, t);
   return obj;
 
