@@ -5,6 +5,7 @@ module Dat
   class Dict
     def initialize(opt={})
       @dict = {} # The internal hash which maps string words to Dat::Word objects
+      @cdict = CDict.new
       file = opt[:file] || File.open(File.expand_path("../../../data/dict", __FILE__))
       bogus = opt[:bogus] || File.open(File.expand_path("../../../data/bogus", __FILE__))
       import file
@@ -12,7 +13,8 @@ module Dat
     end
 
     def [](word)
-      @dict[word]
+      #@dict[word]
+      @cdict.include? word
     end
 
     def each(&block)
@@ -46,7 +48,14 @@ module Dat
         end
         Word.relatives(*(rels.map {|r| get(r)}), get(word, defn))
       end
+      fill!
       file.close
+    end
+
+    def fill!
+      @dict.each do |k,v|
+        @cdict.add(k)
+      end
     end
 
     def remove(file)
