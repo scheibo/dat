@@ -12,8 +12,12 @@ def rand_word
   (0...8).map{65.+(rand(25)).chr}.join
 end
 
+def rand_4_word
+  (0...4).map{65.+(rand(25)).chr}.join
+end
+
 # perturb
-#
+
 Tach.meter(10000) do
   tach('c-logic random perturb') do
     $clogic.perturb(rand_word)
@@ -21,6 +25,16 @@ Tach.meter(10000) do
 
   tach('rb-logic random perturb') do
     $rblogic.perturb(rand_word)
+  end
+end
+
+Tach.meter(10000) do
+  tach('c-logic random short perturb') do
+    $clogic.perturb(rand_4_word)
+  end
+
+  tach('rb-logic random short perturb') do
+    $rblogic.perturb(rand_4_word)
   end
 end
 
