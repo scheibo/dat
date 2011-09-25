@@ -12,7 +12,7 @@ module Dat
 
     START_WORD = 'dat'
 
-    attr_reader :played, :used
+    attr_reader :played, :used, :dict, :logic, :last
     alias history played
 
     def initialize(num_players=2, start=nil)
@@ -24,6 +24,9 @@ module Dat
       @last = start || START_WORD
       @played = [@last]
       @used = {@last => true}
+
+      @start = Time.now
+      @times = []
     end
 
     def turn
@@ -35,15 +38,32 @@ module Dat
     end
 
     def to_s
-      result = @played.join " -> "
+      display(:all)
+    end
+
+    def display(num, time=false)
+      items = (num == :all ? @played : @played.last(num))
+      size = items.size
+      result = []
+      items.each_with_index do |item, i|
+        if time && i != 0
+          result << "#{item} (#{@times[i-1]})"
+        else
+          result << "#{item}"
+        end
+        result << " -> " if i != size-1
+      end
       result << " -> ???" if !@won
-      result
+      result.join
     end
 
     def play(word)
       raise InvalidMove, "Game has already been won" if @won
       # @dict[word] && @logic.perturb(@last, @used).include?(word)
       if @dict[word] && !@used[word] && @logic.leven(word, @last) == 1
+        t = Time.now
+        @times << ("%.1f" % (t-@start))
+        @start = t
         @last = word
         @played << word
         @used[word] = true
