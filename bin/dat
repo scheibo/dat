@@ -1,13 +1,33 @@
 #!/usr/bin/env ruby
 $:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expand_path('../../lib', __FILE__))
 
+require 'xmpp4r'
 require 'dat'
-include Dat
 
-d = Dict.new
-#d.each do |k,v|
-#  results = Logic.perturb(k, d)
-#  if !v.relatives.empty? && v.relatives.difference(results).empty?
-#    p k
-#  end
-#end
+DATBOT = ['dat@scheibo.com', 'robotdat']
+
+# settings
+myJID = Jabber::JID.new(DATBOT[0])
+myPassword = DATBOT[1]
+cl = Jabber::Client.new(myJID)
+cl.connect
+cl.auth(myPassword)
+cl.send(Jabber::Presence.new)
+puts "Connected ! send messages to #{myJID.strip.to_s}."
+mainthread = Thread.current
+cl.add_message_callback do |m|
+  if m.type != :error
+    m2 = Jabber::Message.new(m.from, "You sent: #{m.body}")
+    m2.type = m.type
+    cl.send(m2)
+    if m.body == 'exit'
+      m2 = Jabber::Message.new(m.from, "Exiting ...")
+      m2.type = m.type
+      cl.send(m2)
+      mainthread.wakeup
+    end
+  end
+end
+Thread.stop
+cl.close
+
