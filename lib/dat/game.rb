@@ -1,5 +1,6 @@
-$:.unshift(File.expand_path('../../dat', __FILE__)) unless $:.include?(File.expand_path('../../dat', __FILE__))
-require 'dict'
+#$:.unshift(File.expand_path('../../../lib', __FILE__)) unless $:.include?(File.expand_path('../../../lib', __FILE__))
+#require 'logic'
+
 require 'logic'
 
 module Dat
@@ -10,18 +11,20 @@ module Dat
 
   class Game
 
-    START_WORD = 'dat'
+    START_WORD = 'DAT'
+    DEFAULT_PLAYERS = 2
 
-    attr_reader :played, :used, :dict, :logic, :last
+    attr_reader :played, :used, :dict, :logic, :last, :min_size
     alias history played
 
-    def initialize(num_players=2, start_word=nil, dict=nil)
-      @players = Array.new(num_players) { |i| i+1 }
+    def initialize(opt={})
+      opt[:num_players] ||= DEFAULT_PLAYERS
+      @players = opt[:players] || Array.new(opt[:num_players]) { |i| i+1 }
 
-      @dict = dict || Dict.new
-      @logic = Logic.new(@dict)
+      @dict = opt[:dict] || Dict.new
+      @logic = Dat::Pure::Logic.new(@dict, opt)
 
-      @last = start_word || START_WORD
+      @last = opt[:start_word] || START_WORD
       @played = [@last]
       @used = {@last => true}
 
@@ -30,6 +33,7 @@ module Dat
     end
 
     def forfeit(player)
+      # TODO player is array not hash
       @players[player] = nil
       if @players.compact.size == 1
         @won = @players.compact[0]
@@ -88,6 +92,11 @@ module Dat
           raise WinningMove, "Player #{@won} wins"
         end
       else
+        p word
+        p @last
+        p @dict[word]
+        p @used[word]
+        p @logic.leven(word, @last)
         raise InvalidMove, "Move is invalid"
       end
     end

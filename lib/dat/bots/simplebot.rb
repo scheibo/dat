@@ -1,8 +1,12 @@
-$:.unshift(File.expand_path('../../../lib', __FILE__)) unless $:.include?(File.expand_path('../../../lib', __FILE__))
+$:.unshift(File.expand_path('../../bots', __FILE__)) unless $:.include?(File.expand_path('../../bots', __FILE__))
 require 'bot'
 
-class SimpleBot < Dat::Bot
-  def move
-    @game.logic.perturb(@game.last, @game.used).first
+module Dat
+  class SimpleBot < Bot
+    def move
+      word = @game.logic.perturb(@game.last, @game.used).sample.to_s
+      @game.play(word)
+      word
+    end
   end
 end

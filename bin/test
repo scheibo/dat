@@ -2,7 +2,7 @@
 $:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expand_path('../../lib', __FILE__))
 require 'dat'
 
-bot = Dat::ChatBot.new
-bot.run
-Thread.stop
-bot.stop
+i = Dat::Interface.new
+
+p i.respond('kirk', '!dat')
+p i.respond('kirk', '!time')
