@@ -4,30 +4,101 @@ $:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expa
 require 'xmpp4r'
 require 'dat'
 
-DATBOT = ['dat@scheibo.com', 'robotdat']
+DATBOT_INFO = { :jid => 'dat@scheibo.com', :password => 'robotdat' }
+RECENT_AMOUNT = 4
+MIN_SIZE = 3 # TODO access this from game and allow set in init
+
+$games = Dat::Games.new
 
 # settings
-myJID = Jabber::JID.new(DATBOT[0])
-myPassword = DATBOT[1]
-cl = Jabber::Client.new(myJID)
-cl.connect
-cl.auth(myPassword)
-cl.send(Jabber::Presence.new)
-puts "Connected ! send messages to #{myJID.strip.to_s}."
-mainthread = Thread.current
-cl.add_message_callback do |m|
+client = Jabber::Client.new(Jabber::JID.new(DATBOT_INFO[:jid]))
+client.connect
+client.auth(DATBOT_INFO[:password])
+client.send(Jabber::Presence.new)
+
+client.add_message_callback do |m|
   if m.type != :error
-    m2 = Jabber::Message.new(m.from, "You sent: #{m.body}")
-    m2.type = m.type
-    cl.send(m2)
-    if m.body == 'exit'
-      m2 = Jabber::Message.new(m.from, "Exiting ...")
-      m2.type = m.type
-      cl.send(m2)
-      mainthread.wakeup
+    response = respond(m.from, m.body)
+    if response
+      msg = Jabber::Message.new(m.from, response)
+      msg.set_type(:chat)
+      client.send(msg)
     end
   end
 end
 Thread.stop
-cl.close
+client.close
 
+def respond(from, message)
+  prefix, msg = message[0], message[1, message.size]
+  case prefix
+  when '!' then
+    case msg
+    when 'help' then help
+    #when 'dat' then new_game(msg)
+    #when 'new' then new_game(msg)
+    #when 'hard' then new_game(msg)
+    when 'end' then forfeit(from)
+    when 'forfeit' then forfeit(from)
+    when 'recent' then recent(from)
+    when 'trecent' then recent(from, true)
+    when 'history' then history(from)
+    when 'thistory' then history(from, true)
+    when 'time' then time(from)
+    end
+  when '?' then define(msg)
+  when '@' then move(from, msg)
+  else nil
+  end
+end
+
+def help
+<<-EOF
+dat - #{Dat::VERSION}
+
+!<command> - send a command to dat bot
+?<word> - define the word if it exists
+@<word> - play a word
+
+Commands:
+  help - displays this help
+  end/forfeit - forfeits the game
+  recent/trecent - displays the words recently played (t prefix for times)
+  history/thistory - displays the entire game history (t prefix for times)
+  time - how long it has been since the last move
+EOF
+end
+
+def define(word)
+  $games.dict[word]
+end
+
+def move(from, word)
+  if word =~ /[a-zA-Z]/
+    return "Word entered is too short" if word.size > MIN_SIZE
+    $games[from].play(word.upcase)
+  else
+    "Not a valid word"
+  end
+rescue InvalidMove => msg
+  msg
+rescue WinningMove => msg
+  msg
+end
+
+def recent(from, timed)
+  $games[from].display(RECENT_AMOUNT, timed)
+end
+
+def history(from, timed)
+  $games[from].display(:all, timed)
+end
+
+def forfeit(from)
+  winner = $games[from].forfeit(1)
+  "Player #{winner} wins"
+end
+
+def time(from)
+  $games[from].time
+end

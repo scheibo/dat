@@ -15,13 +15,13 @@ module Dat
     attr_reader :played, :used, :dict, :logic, :last
     alias history played
 
-    def initialize(num_players=2, start=nil)
-      @num_players = num_players
+    def initialize(num_players=2, start_word=nil, dict=nil)
+      @players = Array.new(num_players) { |i| i+1 }
 
-      @dict = Dict.new
+      @dict = dict || Dict.new
       @logic = Logic.new(@dict)
 
-      @last = start || START_WORD
+      @last = start_word || START_WORD
       @played = [@last]
       @used = {@last => true}
 
@@ -29,12 +29,25 @@ module Dat
       @times = []
     end
 
+    def forfeit(player)
+      @players[player] = nil
+      if @players.compact.size == 1
+        @won = @players.compact[0]
+      end
+      @won
+    end
+
+    def time
+      Time.now - @start
+    end
+
     def turn
       @played.size
     end
 
+    # TODO write tests for this to verify that it works
     def whos_turn
-      (turn % @num_players) + 1
+      @players[(turn % @players.flatten.size) + 1]
     end
 
     def to_s
@@ -58,7 +71,7 @@ module Dat
     end
 
     def play(word)
-      raise InvalidMove, "Game has already been won" if @won
+      raise InvalidMove, "The game has already been won by #{@won}" if @won
       # @dict[word] && @logic.perturb(@last, @used).include?(word)
       if @dict[word] && !@used[word] && @logic.leven(word, @last) == 1
         t = Time.now
@@ -71,8 +84,8 @@ module Dat
 
         # check if winning
         if @logic.perturb(@last, @used).empty?
-          @won = true
-          raise WinningMove, "Player #{whos_turn-1} wins"
+          @won = whos_turn-1
+          raise WinningMove, "Player #{@won} wins"
         end
       else
         raise InvalidMove, "Move is invalid"
