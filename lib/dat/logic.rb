@@ -16,41 +16,13 @@ module Dat
         @transpose = opt.fetch(:transpose, false)
 
         @min_size = opt.fetch(:min_size, MIN_SIZE)
+
+        @perturb_cache = {}
+        @cachable = @add && @replace && @delete && !@transpose
       end
 
       def perturb(wordstr, used={})
-        size = wordstr.size
-        result = []
-
-        if @add
-          (0..size).each do |i|
-            try_letters(wordstr[0,i], wordstr[i,size], wordstr, used, result)
-          end
-        end
-
-        if @replace
-          (0...size).each do |i|
-            try_letters(wordstr[0,i], wordstr[i+1,size], wordstr, used, result)
-          end
-        end
-
-        if @delete
-          (0...size).each do |i|
-            w = "#{wordstr[0,i]}#{wordstr[i+1,size]}"
-            if @dict[w] && !used[w] && size > @min_size
-              result << @dict[w]
-            end
-          end
-        end
-
-        if @transpose
-          (0...size-1).each do |i|
-            w = "#{wordstr[0,i]}#{wordstr[i+1]}#{wordstr[i]}#{wordstr[i+2,size-i-1]}"
-            result << w if @dict[w] && !used[w]
-          end
-        end
-
-        result
+        perturb_impl(wordstr).reject {|w| used[w] }
       end
 
       # http://alias-i.com/lingpipe/src/com/aliasi/spell/JaroWinklerDistance.java
@@ -154,11 +126,53 @@ module Dat
 
       private
 
-      def try_letters(start, finish, wordstr, used, result)
+      def try_letters(start, finish, wordstr, result)
         ('A'..'Z').each do |c|
           w = "#{start}#{c}#{finish}"
-          result << @dict[w] if @dict[w] && !used[w] && w != wordstr
+          result << @dict[w] if @dict[w] && w != wordstr
         end
+      end
+
+      def perturb_impl(wordstr)
+        if @cachable
+          cached = @perturb_cache[wordstr]
+          return cached if cached
+        end
+
+        size = wordstr.size
+        result = []
+
+        if @add
+          (0..size).each do |i|
+            try_letters(wordstr[0,i], wordstr[i,size], wordstr, result)
+          end
+        end
+
+        if @replace
+          (0...size).each do |i|
+            try_letters(wordstr[0,i], wordstr[i+1,size], wordstr, result)
+          end
+        end
+
+        if @delete
+          (0...size).each do |i|
+            w = "#{wordstr[0,i]}#{wordstr[i+1,size]}"
+            if @dict[w] && size > @min_size
+              result << @dict[w]
+            end
+          end
+        end
+
+        if @transpose
+          (0...size-1).each do |i|
+            w = "#{wordstr[0,i]}#{wordstr[i+1]}#{wordstr[i]}#{wordstr[i+2,size-i-1]}"
+            result << w if @dict[w]
+          end
+        end
+
+        @perturb_cache[wordstr] = result if @cachable
+
+        result
       end
     end
   end

@@ -5,8 +5,6 @@ require 'tach'
 include Dat
 
 d = Dict.new
-$clogic = Logic.new d
-$rblogic = Pure::Logic.new d
 
 def rand_word
   (0...8).map{65.+(rand(25)).chr}.join
@@ -16,8 +14,14 @@ def rand_4_word
   (0...4).map{65.+(rand(25)).chr}.join
 end
 
+def rand_3_word
+  (0...3).map{65.+(rand(25)).chr}.join
+end
+
 # perturb
 
+$clogic = Logic.new d
+$rblogic = Pure::Logic.new d
 Tach.meter(10000) do
   tach('c-logic random perturb') do
     $clogic.perturb(rand_word)
@@ -28,16 +32,32 @@ Tach.meter(10000) do
   end
 end
 
+$clogic = Logic.new d
+$rblogic = Pure::Logic.new d
 Tach.meter(10000) do
-  tach('c-logic random short perturb') do
+  tach('c-logic random short (4) perturb') do
     $clogic.perturb(rand_4_word)
   end
 
-  tach('rb-logic random short perturb') do
+  tach('rb-logic random short (4) perturb') do
     $rblogic.perturb(rand_4_word)
   end
 end
 
+$clogic = Logic.new d
+$rblogic = Pure::Logic.new d
+Tach.meter(10000) do
+  tach('c-logic random short (3) perturb') do
+    $clogic.perturb(rand_3_word)
+  end
+
+  tach('rb-logic random short (3) perturb') do
+    $rblogic.perturb(rand_3_word)
+  end
+end
+
+$clogic = Logic.new d
+$rblogic = Pure::Logic.new d
 Tach.meter(10000) do
   tach('c-logic perturb') do
     $clogic.perturb('DAT')

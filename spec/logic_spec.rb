@@ -19,6 +19,12 @@ describe Dat::Logic do
       @log.perturb('DAT').sort_by(&:get).should == @plog.perturb('DAT').sort_by(&:get)
       @log.perturb('WALKED').sort_by(&:get).should == @plog.perturb('WALKED').sort_by(&:get)
     end
+
+    it "should be able to deal with filtering out already seen values" do
+      used = {'CAT' => true, 'BAT' => true, 'FAT' => true, 'SAT' => true, 'MAT' => true, 'DAB' => true}
+      @log.perturb('DAT', used).sort_by(&:get).should == @plog.perturb('DAT', used).sort_by(&:get)
+    end
+
   end
 
   context "#damlev" do
