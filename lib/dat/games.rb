@@ -2,6 +2,7 @@ $:.unshift(File.expand_path('../../dat', __FILE__)) unless $:.include?(File.expa
 require 'dict'
 require 'bots'
 require 'game'
+require 'thread'
 
 module Dat
 
@@ -15,6 +16,7 @@ module Dat
     attr_reader :dict
 
     def initialize
+      @mutex = Mutex.new
       @games = {}
       @dict = Dict.new
       @gid = 0
@@ -34,10 +36,9 @@ module Dat
       @games[gid][1]
     end
 
-    # TODO not threadsafe, can have gid being incremented wrong
     def add(opt={})
       opt.merge(:dict => @dict)
-      @gid += 1
+      @mutex.synchronize { @gid += 1 }
       game = Game.new(opt)
       # TODO right now only one option, to make a simple bot - needs more
       bot = SimpleBot.new(game)
