@@ -1,5 +1,9 @@
 require 'helper'
 
+def a_to_h(ary)
+  Hash[*ary.collect { |v| [v, true] }.flatten]
+end
+
 describe Dat::Logic do
   include Dat
 
@@ -18,6 +22,12 @@ describe Dat::Logic do
     it "should behave the same for c and pure versions" do
       @log.perturb('DAT').sort_by(&:get).should == @plog.perturb('DAT').sort_by(&:get)
       @log.perturb('WALKED').sort_by(&:get).should == @plog.perturb('WALKED').sort_by(&:get)
+    end
+
+    it "should be able to ignore used words" do
+      words = %w{BAT CAT EAT FAT GAT HAT KAT LAT MAT OAT PAT QAT RAT SAT TAT VAT WAT}
+      #@log.perturb('DAT', a_to_h(words)).map(&:get).should_not include(words)
+      @plog.perturb('DAT', a_to_h(words)).map(&:get).should_not include(words)
     end
   end
 
