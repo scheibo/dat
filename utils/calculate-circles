@@ -5,13 +5,14 @@ include Dat
 
 def relative_unreachable(infile, outfile)
   dict = Dict.new(:file => infile)
+  logic = Pure::Logic.new dict
 
   dict.each do |k,v|
-    neighbors = Logic.perturb(k, dict)
+    neighbors = logic.perturb(k, :transpose => true, :min_size => 2)
 
     n2 = Set.new
     neighbors.each do |n|
-      Logic.perturb(n.get, dict).map { |e| n2.add(e) }
+      logic.perturb(n.get).map { |e| n2.add(e) }
     end
 
     neighbors << v
@@ -24,8 +25,8 @@ def relative_unreachable(infile, outfile)
     end
   end
 
-  File.open(outfile, 'w').puts dict
+  outfile.puts dict
 end
 
 
-relative_unreachable File.open('../data/norelativereachable.txt'), '../data/nocircles.txt'
+relative_unreachable File.open('../data/norelativereachable.txt'), File.open('../data/nocircles.txt', 'w')

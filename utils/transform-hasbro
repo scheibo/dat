@@ -92,4 +92,4 @@ def check_for_caps(word, defn)
   relatives(*(matches.map {|w| g(w)}), g(word))
 end
 
-transform File.open('scrabble-output'), File.open('scrabble-hasbro.dict', 'w')
+transform File.open('scrabble-output'), File.open('../data/all.txt', 'w')

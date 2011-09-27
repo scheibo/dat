@@ -4,8 +4,8 @@ require 'dat'
 include Dat
 require 'set'
 
-d1 = Dict.new(ARGV[0])
-d2 = Dict.new(ARGV[1])
+d1 = Dict.new(:file => File.open(ARGV[0]))
+d2 = Dict.new(:file => File.open(ARGV[1]))
 
 s1 = Set.new
 d1.each do |k,v|

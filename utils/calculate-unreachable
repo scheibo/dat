@@ -5,15 +5,16 @@ include Dat
 
 def unreachable(infile, outfile)
   dict = Dict.new(:file => infile)
+  logic = Pure::Logic.new dict
 
   dict.each do |k,v|
-    results = Logic.perturb(k, dict)
+    results = logic.perturb(k, :transpose => true, :min_size => 2)
     if results.empty?
       dict.delete(v)
     end
   end
 
-  File.open(outfile, 'w').puts dict
+  outfile.puts dict
 end
 
-unreachable File.open('../data/all.txt'), '../data/nounreachable.txt'
+unreachable File.open('../data/all.txt'), File.open('../data/nounreachable.txt', 'w')

@@ -5,16 +5,17 @@ include Dat
 
 def relative_unreachable(infile, outfile)
   dict = Dict.new(:file => infile)
+  logic = Pure::Logic.new dict
 
   dict.each do |k,v|
-    results = Logic.perturb(k, dict)
+    results = logic.perturb(k, :transpose => true, :min_size => 2)
     if v.relatives.union(results).difference(v.relatives).empty?
       dict.delete(v)
     end
   end
 
-  File.open(outfile, 'w').puts dict
+  outfile.puts dict
 end
 
 
-relative_unreachable File.open('../data/nounreachable.txt'), '../data/norelativereachable.txt'
+relative_unreachable File.open('../data/nounreachable.txt'), File.open('../data/norelativereachable.txt', 'w')
