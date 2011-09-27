@@ -26,37 +26,52 @@ typedef int8_t size;
 #define NUM_CHARS 4
 
 static ID id_get;
+static ID id_reject;
 static const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 static VALUE init(int argc, VALUE *argv, VALUE self) {
-  VALUE dict, opt;
+  VALUE dict, opt, add, replace, delete, transpose;
   rb_scan_args(argc, argv, "11", &dict, &opt);
   if (NIL_P(opt)) opt = rb_hash_new();
 
   rb_iv_set(self, "@dict", dict);
 
-  rb_iv_set(self, "@add", rb_hash_lookup2(opt, ID2SYM(rb_intern("add")), Qtrue));
-  rb_iv_set(self, "@replace", rb_hash_lookup2(opt, ID2SYM(rb_intern("replace")), Qtrue));
-  rb_iv_set(self, "@delete", rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue));
-  rb_iv_set(self, "@transpose", rb_hash_lookup2(opt, ID2SYM(rb_intern("transpose")), Qtrue));
+  add = rb_hash_lookup2(opt, ID2SYM(rb_intern("add")), Qtrue);
+  replace = rb_hash_lookup2(opt, ID2SYM(rb_intern("replace")), Qtrue);
+  delete = rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qtrue);
+  transpose = rb_hash_lookup2(opt, ID2SYM(rb_intern("delete")), Qfalse);
+
+  rb_iv_set(self, "@add", add);
+  rb_iv_set(self, "@replace", replace);
+  rb_iv_set(self, "@delete", delete) ;
+  rb_iv_set(self, "@transpose", transpose);
 
   rb_iv_set(self, "@min_size", rb_hash_lookup2(opt, ID2SYM(rb_intern("min_size")), Qtrue));
+
+  rb_iv_set(self, "@cachable", (RTEST(add) && RTEST(replace) && RTEST(delete) && !RTEST(transpose) ? Qtrue : Qfalse));
+  rb_iv_set(self, "@perturb_cache", rb_hash_new());
 
   return self;
 }
 
 /* Helper function to add values to the results array */
-static add_if_in_dict(VALUE dict, char *word, VALUE used, VALUE result) {
+static void add_if_in_dict(VALUE dict, char *word, VALUE result) {
   VALUE w = rb_str_new_cstr(word);
   VALUE d = rb_funcall(dict, id_get, 1, w);
-  if (!NIL_P(d) && !RTEST(rb_funcall(used, id_get, 1, word))) rb_ary_push(result, d);
+  if (RTEST(d)) rb_ary_push(result, d);
 }
 
-/* precondition: str is not nil */
-static VALUE perturb(int argc, VALUE *argv, VALUE self) {
-  VALUE str, used;
-  rb_scan_args(argc, argv, "11", &str, &used);
-  if (NIL_P(used)) used = rb_hash_new();
+static VALUE reject_i(VALUE word, VALUE used) {
+  return RTEST(rb_funcall(used, id_get, 1, word));
+}
+
+static VALUE perturb_impl(VALUE self, VALUE str) {
+  char cacheable = RTEST(rb_iv_get(self, "@cachable"));
+  VALUE cache = rb_iv_get(self, "@perturb_cache");
+  if (cacheable) {
+    VALUE r = rb_hash_aref(cache, str);
+    if (RTEST(r)) return r;
+  }
 
   VALUE dict = rb_iv_get(self, "@dict");
   VALUE min_size = rb_iv_get(self, "@min_size");
@@ -85,7 +100,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE self) {
         strncpy(w, start, i+1);
         strncat(w, &c, 1);
         strncat(w, fin, len-i);
-        add_if_in_dict(dict, w, used, result);
+        add_if_in_dict(dict, w, result);
       }
       if (i < len) {
         if (replace) {
@@ -95,7 +110,7 @@ static VALUE perturb(int argc, VALUE *argv, VALUE self) {
           strncat(w, fin, len-i-1);
           w[len+1] = '\0';
           if (strncmp(word, w, len)) {
-            add_if_in_dict(dict, w, used, result);
+            add_if_in_dict(dict, w, result);
           }
         }
       }
@@ -105,10 +120,22 @@ static VALUE perturb(int argc, VALUE *argv, VALUE self) {
       strncpy(w, start, i+1);
       strncat(w, fin, len-i-1);
       w[len] = '\0';
-      add_if_in_dict(dict, w, used, result);
+      add_if_in_dict(dict, w, result);
     }
   }
 
+  if (cacheable) {
+    rb_hash_aset(cache, str, result);
+  }
+
+  return result;
+}
+
+static VALUE perturb(int argc, VALUE *argv, VALUE self) {
+  VALUE str, used;
+  rb_scan_args(argc, argv, "11", &str, &used);
+  if (NIL_P(used)) used = rb_hash_new();
+  VALUE result = rb_block_call(perturb_impl(self, str), id_reject, 0, 0, reject_i, used);
   return result;
 }
 
@@ -248,8 +275,10 @@ void Init_logic(void) {
 
   rb_define_method(cLogic, "initialize", init, -1);
   rb_define_method(cLogic, "perturb", perturb, -1);
+  rb_define_private_method(cLogic, "perturb_impl", perturb_impl, 1);
   rb_define_method(cLogic, "jaro_winkler", jaro_winkler, 2);
   rb_define_method(cLogic, "leven", leven, 2);
   rb_define_method(cLogic, "damlev", damlev, 2);
   id_get = rb_intern("[]");
+  id_reject = rb_intern("reject");
 }

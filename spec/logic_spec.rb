@@ -26,8 +26,13 @@ describe Dat::Logic do
 
     it "should be able to ignore used words" do
       words = %w{BAT CAT EAT FAT GAT HAT KAT LAT MAT OAT PAT QAT RAT SAT TAT VAT WAT}
-      #@log.perturb('DAT', a_to_h(words)).map(&:get).should_not include(words)
+      @log.perturb('DAT', a_to_h(words)).map(&:get).should_not include(words)
       @plog.perturb('DAT', a_to_h(words)).map(&:get).should_not include(words)
+    end
+
+    it "should be able to deal with filtering out already seen values" do
+      used = {'CAT' => true, 'BAT' => true, 'FAT' => true, 'SAT' => true, 'MAT' => true, 'DAB' => true}
+      @log.perturb('DAT', used).sort_by(&:get).should == @plog.perturb('DAT', used).sort_by(&:get)
     end
   end
 
