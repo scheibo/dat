@@ -100,7 +100,7 @@ module Dat
 
     def move(from, word)
       @games[from].play(word.strip.upcase)
-    rescue InvalidMove, WinningMove => e
+    rescue Move => e
       e.message
     rescue NoGameError => n
       if @games.dict[word.strip.upcase] || word.strip.upcase == Dat::Game::START_WORD

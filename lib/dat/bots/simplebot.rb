@@ -7,6 +7,8 @@ module Dat
       word = @game.logic.perturb(@game.last, @game.used).sample.to_s
       @game.play(self, word)
       word
+    rescue WinningMove => e
+      word << "\n" << e.message
     end
 
     def to_s

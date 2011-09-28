@@ -92,12 +92,8 @@ module Dat
     def next_move!
       next_player = whos_turn
       if next_player.respond_to?(:bot?) && next_player.bot?
-        next_player.move
-      else
-        return
+        next_player.move << "\n" << next_move!.to_s
       end
-
-      next_move!
     end
 
     def play(player, word)
