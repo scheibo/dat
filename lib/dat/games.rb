@@ -27,12 +27,15 @@ module Dat
       game = Game.new(opt)
 
       opt[:players].each do |p|
-        if p.respond_to(:bot?) and p.bot?
+        if p.respond_to?(:bot?) && p.bot?
           p.init(game)
         end
       end
 
+      game.next_move!
+
       @games[gid] = game
+      game.last
     end
   end
 end

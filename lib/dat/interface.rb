@@ -78,11 +78,12 @@ module Dat
           opt[k] = v
         end
       end
-      if opts[:players] < Dat::Game::MIN_PLAYERS
+
+      if opt[:players].size < Dat::Game::MIN_PLAYERS
         opt[:players] << SimpleBot.new # Default Bot
       end
-      @games.add(opt)
-      @games.bot(from).move
+
+      @games.add(from, opt)
     end
 
     def define(word)
@@ -98,16 +99,14 @@ module Dat
     end
 
     def move(from, word)
-      @games.game(from).play(word.strip.upcase)
-      @games.bot(from).move
+      @games[from].play(word.strip.upcase)
     rescue InvalidMove, WinningMove => e
       e.message
     rescue NoGameError => n
-      if @games.dict[word.strip.upcase]
+      if @games.dict[word.strip.upcase] || word.strip.upcase == Dat::Game::START_WORD
         new_game(:start_word => word.strip.upcase)
-        @games.bot(from).move
       else
-        e.message
+        n.message
       end
     end
 

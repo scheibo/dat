@@ -5,7 +5,7 @@ module Dat
   class SimpleBot < Bot
     def move
       word = @game.logic.perturb(@game.last, @game.used).sample.to_s
-      @game.play(word)
+      @game.play(self, word)
       word
     end
 

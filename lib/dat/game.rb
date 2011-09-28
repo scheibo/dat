@@ -6,6 +6,7 @@ module Dat
   class Move < RuntimeError; end
   class InvalidMove < Move; end
   class WinningMove < Move; end
+  class InvalidGame < RuntimeError; end
 
   class Game
 
@@ -32,14 +33,13 @@ module Dat
       @dict = opt[:dict] || Dict.new
       @logic = Dat::Logic.new(@dict, opt)
 
-      @last = opt[:start_word].upcase || START_WORD
+      @last = opt[:start_word] || START_WORD
+      @last.upcase!
       @played = [@last]
       @used = {@last => true}
 
       @start = Time.now
       @times = []
-
-      next_move!
     end
 
     def forfeit(player)
@@ -52,8 +52,7 @@ module Dat
         @won = @player_order[0]
       end
 
-
-      msg = "Player #{idx} (#{player}) has forfeited."
+      msg = "Player #{idx+1} (#{player}) has forfeited."
       msg << " Player #{@players[@won]+1} (#{@won}) wins." if @won
       msg
     end
@@ -92,7 +91,7 @@ module Dat
 
     def next_move!
       next_player = whos_turn
-      if next_player.respond_to(:bot?) and next_player.bot?
+      if next_player.respond_to?(:bot?) && next_player.bot?
         next_player.move
       else
         return
@@ -121,7 +120,7 @@ module Dat
           raise WinningMove, "Player #{@players[@won]+1} (#{@won}) wins."
         end
 
-        next_move
+        next_move!
       else
         raise InvalidMove, "Move is invalid."
       end
