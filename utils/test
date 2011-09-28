@@ -2,15 +2,11 @@
 $: << File.expand_path('../../lib', __FILE__)
 require 'dat'
 include Dat
-## Insert code to run
-c = CDict.new
 
-c.add('HELLO')
-c.add('GOODBYE')
-c.add('SUPDAWG')
-p c.include?('GOODBYE')
-p c.include?('HELL')
-c.delete('GOODBYE')
-p c.include?('GOODBYE')
-c.add('FACE')
-p c.include?('FACE')
+game = Game.new(:players => ['p1', 'p2'])
+game.play('p2', 'DOAT')
+game.play('p1', 'BOAT')
+#game.play('p2', 'AT')
+
+p game.used
+p game.logic.perturb(game.last, game.used)

@@ -103,8 +103,9 @@ module Dat
     rescue Move => e
       e.message
     rescue NoGameError => n
-      if @games.dict[word.strip.upcase] || word.strip.upcase == Dat::Game::START_WORD
-        new_game(:start_word => word.strip.upcase)
+      w = word.strip.upcase
+      if @games.dict[w] || w == Dat::Game::START_WORD
+        new_game(:start_word => w)
       else
         n.message
       end
