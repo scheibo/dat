@@ -142,31 +142,31 @@ module Dat
         size = wordstr.size
         result = []
 
-        if @add
+        if @add && size >= @min_size+1
           (0..size).each do |i|
             try_letters(wordstr[0,i], wordstr[i,size], wordstr, result)
           end
         end
 
-        if @replace
+        if @replace && size >= @min_size
           (0...size).each do |i|
             try_letters(wordstr[0,i], wordstr[i+1,size], wordstr, result)
           end
         end
 
-        if @delete
+        if @delete && size > @min_size
           (0...size).each do |i|
             w = "#{wordstr[0,i]}#{wordstr[i+1,size]}"
-            if @dict[w] && size > @min_size
+            if @dict[w]
               result << @dict[w]
             end
           end
         end
 
-        if @transpose
+        if @transpose && size >= @min_size
           (0...size-1).each do |i|
             w = "#{wordstr[0,i]}#{wordstr[i+1]}#{wordstr[i]}#{wordstr[i+2,size-i-1]}"
-            result << w if @dict[w]
+            result << @dict[w] if @dict[w]
           end
         end
 

@@ -46,7 +46,7 @@ static VALUE init(int argc, VALUE *argv, VALUE self) {
   rb_iv_set(self, "@delete", delete) ;
   rb_iv_set(self, "@transpose", transpose);
 
-  rb_iv_set(self, "@min_size", rb_hash_lookup2(opt, ID2SYM(rb_intern("min_size")), Qtrue));
+  rb_iv_set(self, "@min_size", rb_hash_lookup2(opt, ID2SYM(rb_intern("min_size")), INT2FIX(MIN_SIZE)));
 
   rb_iv_set(self, "@cachable", (RTEST(add) && RTEST(replace) && RTEST(delete) && !RTEST(transpose) ? Qtrue : Qfalse));
   rb_iv_set(self, "@perturb_cache", rb_hash_new());
@@ -74,15 +74,13 @@ static VALUE perturb_impl(VALUE self, VALUE str) {
   }
 
   VALUE dict = rb_iv_get(self, "@dict");
-  VALUE min_size = rb_iv_get(self, "@min_size");
+  size min_size = FIX2LONG(rb_iv_get(self, "@min_size"));
 
   char start[SIZE_BYTES], fin[SIZE_BYTES], w[SIZE_BYTES];
 
   char *word = StringValueCStr(str); /* word is assumed to already be uppercase */
   size len = RSTRING_LEN(str); /* should be strlen(word) */
   VALUE result = rb_ary_new();
-
-  size msize = NIL_P(min_size) ? MIN_SIZE : FIX2LONG(min_size);
 
   char add = RTEST(rb_iv_get(self, "@add"));
   char replace = RTEST(rb_iv_get(self, "@replace"));
@@ -95,7 +93,7 @@ static VALUE perturb_impl(VALUE self, VALUE str) {
     strncpy(start, word, i);
     start[i] = '\0';
     for(j = 0; c = alpha[j]; j++) {
-      if (add) {
+      if (add && len >= min_size+1) {
         strncpy(fin, word+i, len+1);
         strncpy(w, start, i+1);
         strncat(w, &c, 1);
@@ -103,7 +101,7 @@ static VALUE perturb_impl(VALUE self, VALUE str) {
         add_if_in_dict(dict, w, result);
       }
       if (i < len) {
-        if (replace) {
+        if (replace && len >= min_size) {
           (i+1 == len) ? strncpy(fin, "", 2) : strncpy(fin, word+i+1, len+1);
           strncpy(w, start, i+1);
           strncat(w, &c, 1);
@@ -115,7 +113,7 @@ static VALUE perturb_impl(VALUE self, VALUE str) {
         }
       }
     }
-    if (i < len && delete && len > msize) {
+    if (i < len && delete && len > min_size) {
       (i+1 == len) ? strncpy(fin, "", 2) : strncpy(fin, word+i+1, len+1);
       strncpy(w, start, i+1);
       strncat(w, fin, len-i-1);
