@@ -17,12 +17,6 @@ module Dat
     end
     alias << add_relative
 
-    def isolate!
-      @relatives.each { |r| r.relatives.delete self }
-      @relatives = Set.new
-      @type = nil
-    end
-
     def to_s
       @word
     end
