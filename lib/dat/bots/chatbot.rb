@@ -7,7 +7,8 @@ module Dat
 
     DATBOT_INFO = { :jid => 'dat@scheibo.com', :password => 'robotdat' }
 
-    def initialize
+    def initialize(log)
+      @log = log || File.open('/dev/null', 'w')
       @interface = Interface.new
     end
 
@@ -17,6 +18,8 @@ module Dat
       @client.auth(DATBOT_INFO[:password])
       @client.send(Jabber::Presence.new)
 
+      @log.puts "Chatbot logged on."
+
       @client.add_message_callback do |m|
         if m.type != :error && !m.composing? && !m.body.to_s.strip.empty?
           response = @interface.respond(m.from, m.body).to_s.strip
@@ -24,6 +27,7 @@ module Dat
             msg = Jabber::Message.new(m.from, response)
             msg.set_type(:chat)
             @client.send(msg)
+            @log.puts msg.scan(/^.*/).map {|l| "# #{l}"}.join("\n")
           end
         end
       end
