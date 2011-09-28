@@ -1,7 +1,15 @@
 module Dat
   class Bot
-    def initialize(game)
+    def init(game)
       @game = game
+    end
+
+    def bot?
+      true
+    end
+
+    def to_s
+      'Bot'
     end
 
     def move

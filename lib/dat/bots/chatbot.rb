@@ -27,10 +27,9 @@ module Dat
           end
         end
       end
-    end
 
-    def stop
-      @client.close if @client
+      Thread.stop
+      @client.stop
     end
   end
 end

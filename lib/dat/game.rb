@@ -1,6 +1,4 @@
-#$:.unshift(File.expand_path('../../../lib', __FILE__)) unless $:.include?(File.expand_path('../../../lib', __FILE__))
-#require 'logic'
-
+$:.unshift(File.expand_path('../../../lib', __FILE__)) unless $:.include?(File.expand_path('../../../lib', __FILE__))
 require 'logic'
 
 module Dat
@@ -12,33 +10,52 @@ module Dat
   class Game
 
     START_WORD = 'DAT'
-    DEFAULT_PLAYERS = 2
+    MIN_PLAYERS = 2
 
     attr_reader :played, :used, :dict, :logic, :last, :min_size
     alias history played
 
     def initialize(opt={})
-      opt[:num_players] ||= DEFAULT_PLAYERS
-      @players = opt[:players] || Array.new(opt[:num_players]) { |i| i+1 }
+      if !opt[:players] || opt[:players].size < MIN_PLAYERS
+        raise InvalidGame, "Not enough players in the game."
+      else
+        num_players = opt[:players].size
+      end
+
+      # Mix of player jids and bot objects
+      @players = {}
+      @player_order = opt[:players]
+      opt[:players].each_with_index do |p, i|
+        @players[p] = i
+      end
 
       @dict = opt[:dict] || Dict.new
-      @logic = Dat::Pure::Logic.new(@dict, opt)
+      @logic = Dat::Logic.new(@dict, opt)
 
-      @last = opt[:start_word] || START_WORD
+      @last = opt[:start_word].upcase || START_WORD
       @played = [@last]
       @used = {@last => true}
 
       @start = Time.now
       @times = []
+
+      next_move!
     end
 
     def forfeit(player)
-      # TODO player is array not hash
-      @players[player] = nil
-      if @players.compact.size == 1
-        @won = @players.compact[0]
+      idx = @players[player]
+      @players.delete player
+      @player_order[idx] = nil
+      @player_order.compact!
+
+      if @players.size == 1
+        @won = @player_order[0]
       end
-      @won
+
+
+      msg = "Player #{idx} (#{player}) has forfeited."
+      msg << " Player #{@players[@won]+1} (#{@won}) wins." if @won
+      msg
     end
 
     def time
@@ -49,9 +66,8 @@ module Dat
       @played.size
     end
 
-    # TODO write tests for this to verify that it works
     def whos_turn
-      @players[(turn % @players.flatten.size) + 1]
+      @player_order[turn % @players.size]
     end
 
     def to_s
@@ -74,9 +90,23 @@ module Dat
       result.join
     end
 
-    def play(word)
-      raise InvalidMove, "The game has already been won by #{@won}" if @won
-      # @dict[word] && @logic.perturb(@last, @used).include?(word)
+    def next_move!
+      next_player = whos_turn
+      if next_player.respond_to(:bot?) and next_player.bot?
+        next_player.move
+      else
+        return
+      end
+
+      next_move!
+    end
+
+    def play(player, word)
+      expected_player = whos_turn
+      raise InvalidMove "#{player} is not a valid player." if !@players[player]
+      raise InvalidMove, "Cannot play out of turn. It is player #{@player[expected_player]}'s (#{expected_player}) move." if player != expected_player
+      raise InvalidMove, "The game has already been won by #{@won}." if @won
+
       if @dict[word] && !@used[word] && @logic.leven(word, @last) == 1
         t = Time.now
         @times << ("%.1f" % (t-@start))
@@ -84,20 +114,16 @@ module Dat
         @last = word
         @played << word
         @used[word] = true
-        @dict[word].relatives.map { |r| @used[r] = true }
+        @dict[word].relatives.map { |r| @used[r.get] = true }
 
-        # check if winning
         if @logic.perturb(@last, @used).empty?
-          @won = whos_turn-1
-          raise WinningMove, "Player #{@won} wins"
+          @won = player
+          raise WinningMove, "Player #{@players[@won]+1} (#{@won}) wins."
         end
+
+        next_move
       else
-        p word
-        p @last
-        p @dict[word]
-        p @used[word]
-        p @logic.leven(word, @last)
-        raise InvalidMove, "Move is invalid"
+        raise InvalidMove, "Move is invalid."
       end
     end
 

@@ -8,5 +8,9 @@ module Dat
       @game.play(word)
       word
     end
+
+    def to_s
+      'SimpleBot'
+    end
   end
 end

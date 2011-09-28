@@ -1,20 +1,18 @@
 $:.unshift(File.expand_path('../../dat', __FILE__)) unless $:.include?(File.expand_path('../../dat', __FILE__))
 require 'games'
+require 'game'
 require 'version'
+require 'bots'
 
 module Dat
+
+  class NotImplementedError < RuntimeError; end
+
   class Interface
     RECENT_AMOUNT = 4
 
     def initialize
       @games = Games.new
-      @gids = {}
-    end
-
-    def get_gid(from)
-      @gids.fetch(from)
-    rescue KeyError
-      raise NoGameError
     end
 
     def help
@@ -42,13 +40,13 @@ module Dat
         when 'help' then help
         when 'dat', 'new' then new_game(from, args)
         when 'hard' then new_game(from, args, :hard)
-        when 'end', 'forfeit' then forfeit(get_gid(from))
-        when 'recent' then recent(get_gid(from))
-        when 'trecent' then recent(get_gid(from), true)
-        when 'history' then history(get_gid(from))
-        when 'thistory' then history(get_gid(from), true)
-        when 'time' then time(get_gid(from))
-        when 'u' then used(get_gid(from))
+        when 'end', 'forfeit' then forfeit(from)
+        when 'define', 'dict', 'd' then dict_entry(args)
+        when 'recent' then recent(from)
+        when 'trecent' then recent(from, true)
+        when 'history' then history(from)
+        when 'thistory' then history(from, true)
+        when 'time' then time(from)
         else nil
         end
       when '?' then define(msg)
@@ -58,6 +56,8 @@ module Dat
     rescue NoGameError => e
       e.message
     rescue
+      # TODO debugging code
+      puts $!.message
       puts $!.backtrace.join("\n")
       "ERROR"
     end
@@ -65,53 +65,66 @@ module Dat
     def new_game(from, args=[], type=nil)
       opt = {}
       opt[:delete] = false if type == :hard
+      opt[:players] = [from]
       args.each do |arg|
         k, v = arg.split(":")
-        opt[k] = v
+        if k == 'bot'
+          case v
+          when 'simple' then opt[:players] << SimpleBot.new
+          when 'hard' then raise NotImplementedError, "Hard is not implemented yet."
+          else raise NotImplementedError, "No other bots are implemented."
+          end
+        else
+          opt[k] = v
+        end
       end
-      gid = @games.add(opt)
-      @gids[from] = gid
-      @games.bot(gid).move
+      if opts[:players] < Dat::Game::MIN_PLAYERS
+        opt[:players] << SimpleBot.new # Default Bot
+      end
+      @games.add(opt)
+      @games.bot(from).move
     end
 
     def define(word)
-      @games.dict[word.upcase].definition.capitalize rescue "Not a word"
+      @games.dict[word.upcase].definition.capitalize rescue "Not a word."
+    end
+
+    def dict_entry(args)
+      result = []
+      args.each do |w|
+        result << @game.dict[word.upcase].to_dict_entry if @game.dict[word.upcase]
+      end
+      result.join("\n")
     end
 
     def move(from, word)
-      gid = get_gid(from)
-      @games.game(gid).play(word.strip.upcase)
-      @games.bot(gid).move
+      @games.game(from).play(word.strip.upcase)
+      @games.bot(from).move
     rescue InvalidMove, WinningMove => e
       e.message
     rescue NoGameError => n
       if @games.dict[word.strip.upcase]
         new_game(:start_word => word.strip.upcase)
-        @games.bot(gid).move
+        @games.bot(from).move
       else
         e.message
       end
     end
 
     def recent(gid, timed=false)
-      @games.game(gid).display(RECENT_AMOUNT, timed)
+      @games[gid].display(RECENT_AMOUNT, timed)
     end
 
     def history(gid, timed=false)
-      @games.game(gid).display(:all, timed)
+      @games[gid].display(:all, timed)
     end
 
     def forfeit(gid)
-      winner = @games.game(gid).forfeit(1)
-      "Player #{winner} wins"
-    end
-
-    def used(gid)
-      @games.game(gid).used.keys.join ", "
+      @games[gid].forfeit(gid)
     end
 
     def time(gid)
-      @games.game(gid).time
+      @games[gid].time
     end
   end
 end
