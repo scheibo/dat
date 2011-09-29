@@ -10,9 +10,10 @@ module Dat
   class Games
     attr_reader :dict
 
-    def initialize
+    def initialize(logger)
       @games = {}
       @dict = Dict.new
+      @logger = logger
     end
 
     def [](gid)
@@ -24,7 +25,7 @@ module Dat
     def add(gid, opt={})
       opt.merge(:dict => @dict)
 
-      game = Game.new(opt)
+      game = Game.new(@logger[gid],  opt)
 
       opt[:players].each do |p|
         if p.respond_to?(:bot?) && p.bot?

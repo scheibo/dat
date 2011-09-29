@@ -11,8 +11,8 @@ module Dat
   class Interface
     RECENT_AMOUNT = 4
 
-    def initialize
-      @games = Games.new
+    def initialize(logger)
+      @games = Games.new(logger)
     end
 
     def help

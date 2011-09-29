@@ -16,7 +16,12 @@ module Dat
     attr_reader :played, :used, :dict, :logic, :last, :min_size
     alias history played
 
-    def initialize(opt={})
+    def initialize(logger, opt={})
+      @logger = logger
+      printable_ops = opts.clone
+      printable_opts[:players] = printable_opts[:players].map(&:to_s)
+      @logger.log("game = Dat::Game.new(nil, #{printable_opts})", true)
+
       if !opt[:players] || opt[:players].size < MIN_PLAYERS
         raise InvalidGame, "Not enough players in the game."
       else
@@ -43,6 +48,8 @@ module Dat
     end
 
     def forfeit(player)
+      @logger.log("game.forfeit('#{player}')", true)
+
       idx = @players[player]
       @players.delete player
       @player_order[idx] = nil
@@ -97,6 +104,8 @@ module Dat
     end
 
     def play(player, word)
+      @logger.log("game.play('#{player}', '#{word}')", true)
+
       expected_player = whos_turn
       raise InvalidMove "#{player} is not a valid player." if !@players[player]
       raise InvalidMove, "Cannot play out of turn. It is player #{@player[expected_player]}'s (#{expected_player}) move." if player != expected_player
