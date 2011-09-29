@@ -99,7 +99,7 @@ module Dat
     end
 
     def move(from, word)
-      @games[from].play(word.strip.upcase)
+      @games[from].play(from, word.strip.upcase)
     rescue Move => e
       e.message
     rescue NoGameError => n

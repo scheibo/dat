@@ -18,9 +18,9 @@ module Dat
 
     def initialize(logger, opt={})
       @logger = logger
-      printable_ops = opts.clone
-      printable_opts[:players] = printable_opts[:players].map(&:to_s)
-      @logger.log("game = Dat::Game.new(nil, #{printable_opts})", true)
+      printable_opt = opt.clone
+      printable_opt[:players] = printable_opt[:players].map(&:to_s)
+      @logger.log("game = Dat::Game.new(Dat::Logger.new[0], #{printable_opt})", true)
 
       if !opt[:players] || opt[:players].size < MIN_PLAYERS
         raise InvalidGame, "Not enough players in the game."
@@ -48,7 +48,7 @@ module Dat
     end
 
     def forfeit(player)
-      @logger.log("game.forfeit('#{player}')", true)
+      @logger.log("game.forfeit(\"#{player}\")", true)
 
       idx = @players[player]
       @players.delete player
@@ -104,11 +104,11 @@ module Dat
     end
 
     def play(player, word)
-      @logger.log("game.play('#{player}', '#{word}')", true)
+      @logger.log("game.play(\"#{player}\", \"#{word}\")", true)
 
       expected_player = whos_turn
       raise InvalidMove "#{player} is not a valid player." if !@players[player]
-      raise InvalidMove, "Cannot play out of turn. It is player #{@player[expected_player]}'s (#{expected_player}) move." if player != expected_player
+      raise InvalidMove, "Cannot play out of turn. It is player #{@players[expected_player]}'s (#{expected_player}) move." if player != expected_player
       raise InvalidMove, "The game has already been won by #{@won}." if @won
 
       if @dict[word] && !@used[word] && @logic.leven(word, @last) == 1
