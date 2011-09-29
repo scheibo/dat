@@ -22,7 +22,7 @@ module Dat
       end
 
       def perturb(wordstr, used={})
-        perturb_impl(wordstr).reject {|w| used[w] }
+        perturb_impl(wordstr).reject {|w| used[w.get] }
       end
 
       # http://alias-i.com/lingpipe/src/com/aliasi/spell/JaroWinklerDistance.java

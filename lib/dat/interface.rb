@@ -93,7 +93,7 @@ module Dat
     def dict_entry(args)
       result = []
       args.each do |w|
-        result << @game.dict[word.upcase].to_dict_entry if @game.dict[word.upcase]
+        result << @games.dict[w.upcase].to_dict_entry if @games.dict[w.upcase]
       end
       result.join("\n")
     end

@@ -26,6 +26,7 @@ typedef int8_t size;
 #define NUM_CHARS 4
 
 static ID id_get;
+static ID id_real_get;
 static ID id_reject;
 static const char *alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -62,7 +63,7 @@ static void add_if_in_dict(VALUE dict, char *word, VALUE result) {
 }
 
 static VALUE reject_i(VALUE word, VALUE used) {
-  return RTEST(rb_funcall(used, id_get, 1, word));
+  return RTEST(rb_funcall(used, id_get, 1, rb_funcall(word, id_real_get, 0)));
 }
 
 static VALUE perturb_impl(VALUE self, VALUE str) {
@@ -278,5 +279,6 @@ void Init_logic(void) {
   rb_define_method(cLogic, "leven", leven, 2);
   rb_define_method(cLogic, "damlev", damlev, 2);
   id_get = rb_intern("[]");
+  id_real_get = rb_intern("get");
   id_reject = rb_intern("reject");
 }

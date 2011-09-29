@@ -3,4 +3,4 @@ $:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expa
 require 'dat'
 
 #Process.daemon
-Dat::ChatBot.new('/tmp').run
+Dat::ChatBot.new(:path => '/tmp').run

@@ -107,7 +107,7 @@ module Dat
       @logger.log("game.play(\"#{player}\", \"#{word}\")", true)
 
       expected_player = whos_turn
-      raise InvalidMove "#{player} is not a valid player." if !@players[player]
+      raise InvalidMove, "#{player} is not a valid player." if !@players[player]
       raise InvalidMove, "Cannot play out of turn. It is player #{@players[expected_player]}'s (#{expected_player}) move." if player != expected_player
       raise InvalidMove, "The game has already been won by #{@won}." if @won
 

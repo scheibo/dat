@@ -1,8 +1,18 @@
 #!/usr/bin/env ruby
-$:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expand_path('../../lib', __FILE__))
-require 'dat'
+require './lib/dat'
+include Dat
 
-i = Dat::Interface.new
-
-p i.respond('kirk', '!dat')
-p i.respond('kirk', '!time')
+d = Dict.new
+loop do
+begin
+  b = SimpleBot.new
+  g = Game.new(Logger.new(:null => true)[0], :players => ['p1', b], :dict => d)
+  b.init(g)
+    m = b.move
+  loop do
+    m = g.play('p1', g.logic.perturb(m.strip, g.used)[0].to_s)
+  end
+rescue InvalidMove => e
+  puts "#{e.message} =, player (#{g.whos_turn}), m: (#{m}), game: (#{g}), last (#{g.last})"
+end
+end

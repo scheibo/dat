@@ -21,8 +21,8 @@ describe Dat::Logic do
     it "should filter out values that are in the 'used' blacklist" do
       log, plog = create_logics(@dict)
       used = {'CAT' => true, 'BAT' => true, 'FAT' => true, 'SAT' => true, 'MAT' => true, 'DAB' => true}
-      log.perturb('DAT', used).map(&:get).should_not include(used.keys)
-      plog.perturb('DAT', used).map(&:get).should_not include(used.keys)
+      log.perturb('DAT', used).map(&:get).should_not include(*used.keys)
+      plog.perturb('DAT', used).map(&:get).should_not include(*used.keys)
     end
 
     it "should include tranposed words if the :transpose option is set" do
