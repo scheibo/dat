@@ -2,4 +2,5 @@
 $:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expand_path('../../lib', __FILE__))
 require 'dat'
 
-Dat::ChatBot.new.run(File.open('dat.log', 'a'))
+#Process.daemon
+Dat::ChatBot.new(Dat::Logger.new(File.new('/tmp/dat.log', 'w'))).run
