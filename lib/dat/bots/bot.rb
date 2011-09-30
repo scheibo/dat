@@ -9,7 +9,7 @@ module Dat
     end
 
     def to_s
-      'Bot'
+      "Bot-#{object_id}"
     end
 
     def move

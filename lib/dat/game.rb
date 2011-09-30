@@ -45,6 +45,8 @@ module Dat
 
       @start = Time.now
       @times = []
+
+      @bot_moves = []
     end
 
     def forfeit(player)
@@ -96,11 +98,13 @@ module Dat
       result.join
     end
 
-    def next_move!
+    def next_move!(r=[])
       next_player = whos_turn
-      if next_player.respond_to?(:bot?) && next_player.bot?
-        next_player.move << "\n" << next_move!.to_s
+      if next_player.respond_to?(:move)
+        r << next_player.move
+        next_move!(r)
       end
+      r.join("\n")
     end
 
     def play(player, word)
@@ -124,8 +128,6 @@ module Dat
           @won = player
           raise WinningMove, "Player #{@players[@won]+1} (#{@won}) wins."
         end
-
-        next_move!
       else
         raise InvalidMove, "Move is invalid."
       end

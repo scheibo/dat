@@ -8,11 +8,13 @@ module Dat
       @game.play(self, word)
       word
     rescue WinningMove => e
+      p "IN SIMPLEBOT WINNING MOVE"
+      p e.message
       word << "\n" << e.message
     end
 
     def to_s
-      'SimpleBot'
+      "SimpleBot-#{object_id}"
     end
   end
 end

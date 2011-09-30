@@ -34,7 +34,7 @@ module Dat
       end
 
       @games[gid] = game
-      game.next_move!
+      @games[gid].next_move!
     end
   end
 end

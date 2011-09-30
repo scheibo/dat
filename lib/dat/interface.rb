@@ -39,7 +39,7 @@ module Dat
         case msg
         when 'help' then help
         when 'dat', 'new' then new_game(from, args)
-        when 'hard' then new_game(from, args, :hard)
+        when 'hard' then new_game(from, args, :delete => :false)
         when 'end', 'forfeit' then forfeit(from)
         when 'define', 'dict', 'd' then dict_entry(args)
         when 'recent' then recent(from)
@@ -59,12 +59,10 @@ module Dat
       # TODO debugging code
       puts $!.message
       puts $!.backtrace.join("\n")
-      "ERROR"
+      "<<ERROR>> fuck..."
     end
 
-    def new_game(from, args=[], type=nil)
-      opt = {}
-      opt[:delete] = false if type == :hard
+    def new_game(from, args=[], opt={})
       opt[:players] = [from]
       args.each do |arg|
         k, v = arg.split(":")
@@ -87,7 +85,7 @@ module Dat
     end
 
     def define(word)
-      @games.dict[word.upcase].definition.capitalize rescue "Not a word."
+      @games.dict[word.strip.upcase].definition.capitalize rescue "Not a word."
     end
 
     def dict_entry(args)
@@ -99,13 +97,13 @@ module Dat
     end
 
     def move(from, word)
-      @games[from].play(from, word.strip.upcase)
+      ([] << @games[from].play(from, word.strip.upcase) << @games[from].next_move!).join("\n")
     rescue Move => e
       e.message
     rescue NoGameError => n
       w = word.strip.upcase
       if @games.dict[w] || w == Dat::Game::START_WORD
-        new_game(:start_word => w)
+        new_game(from, [], :start_word => w)
       else
         n.message
       end

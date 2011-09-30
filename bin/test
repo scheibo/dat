@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
-require './lib/dat'
+require '../lib/dat'
 include Dat
 
 d = Dict.new
 loop do
 begin
   b = SimpleBot.new
-  g = Game.new(Logger.new(:null => true)[0], :players => ['p1', b], :dict => d)
+  g = Game.new(Logger.new()[0], :players => ['p1', b], :dict => d)
   b.init(g)
     m = b.move
-  while m.size < 15 do # rough measure to check we're always iterating on words
+  while m && m.size < 15 do # rough measure to check we're always iterating on words
     m = g.play('p1', g.logic.perturb(m.strip, g.used)[0].to_s)
   end
 rescue InvalidMove => e

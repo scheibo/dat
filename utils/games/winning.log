@@ -1,0 +1,204 @@
+#!/usr/bin/env ruby
+$:.unshift('/Users/scheibo/Code/src/dat/lib/')
+require 'dat'
+# 2011-09-29 22:52:58 -0400 !dat bot:simple bot:simple bot:simple
+game = Dat::Game.new(Dat::Logger.new[0], {:players=>[kjs@scheibo.com, "SimpleBot-2", "SimpleBot-3", "SimpleBot-4"]})
+game.play("SimpleBot", "WAT")
+game.play("SimpleBot", "WAW")
+game.play("SimpleBot", "RAW")
+# 2011-09-29 22:53:01 -0400 WAT
+# 2011-09-29 22:53:01 -0400 WAW
+# 2011-09-29 22:53:01 -0400 RAW
+# 2011-09-29 22:53:06 -0400 !history
+# 2011-09-29 22:53:06 -0400 DAT -> WAT -> WAW -> RAW -> ???
+# 2011-09-29 22:53:14 -0400 @rat
+game.play("kjs@scheibo.com", "RAT")
+game.play("SimpleBot", "GAT")
+game.play("SimpleBot", "GIT")
+game.play("SimpleBot", "GID")
+# 2011-09-29 22:53:14 -0400 GAT
+# 2011-09-29 22:53:14 -0400 GIT
+# 2011-09-29 22:53:14 -0400 GID
+# 2011-09-29 22:53:28 -0400 @bid
+game.play("kjs@scheibo.com", "BID")
+game.play("SimpleBot", "VID")
+game.play("SimpleBot", "DID")
+game.play("SimpleBot", "DIE")
+# 2011-09-29 22:53:28 -0400 VID
+# 2011-09-29 22:53:28 -0400 DID
+# 2011-09-29 22:53:28 -0400 DIE
+# 2011-09-29 22:53:31 -0400 @ tie
+game.play("kjs@scheibo.com", "TIE")
+game.play("SimpleBot", "THE")
+game.play("SimpleBot", "THO")
+game.play("SimpleBot", "RHO")
+# 2011-09-29 22:53:31 -0400 THE
+# 2011-09-29 22:53:31 -0400 THO
+# 2011-09-29 22:53:31 -0400 RHO
+# 2011-09-29 22:53:39 -0400 @MHO
+game.play("kjs@scheibo.com", "MHO")
+game.play("SimpleBot", "MOO")
+game.play("SimpleBot", "MON")
+game.play("SimpleBot", "FON")
+# 2011-09-29 22:53:39 -0400 MOO
+# 2011-09-29 22:53:39 -0400 MON
+# 2011-09-29 22:53:39 -0400 FON
+# 2011-09-29 22:53:43 -0400 @FUN
+game.play("kjs@scheibo.com", "FUN")
+game.play("SimpleBot", "FUD")
+game.play("SimpleBot", "FUB")
+game.play("SimpleBot", "CUB")
+# 2011-09-29 22:53:43 -0400 FUD
+# 2011-09-29 22:53:43 -0400 FUB
+# 2011-09-29 22:53:43 -0400 CUB
+# 2011-09-29 22:53:47 -0400 @DUB
+game.play("kjs@scheibo.com", "DUB")
+game.play("SimpleBot", "PUB")
+game.play("SimpleBot", "PUL")
+game.play("SimpleBot", "GUL")
+# 2011-09-29 22:53:47 -0400 PUB
+# 2011-09-29 22:53:47 -0400 PUL
+# 2011-09-29 22:53:47 -0400 GUL
+# 2011-09-29 22:53:50 -0400 @GULL
+game.play("kjs@scheibo.com", "GULL")
+game.play("SimpleBot", "BULL")
+game.play("SimpleBot", "FULL")
+game.play("SimpleBot", "LULL")
+# 2011-09-29 22:53:50 -0400 BULL
+# 2011-09-29 22:53:50 -0400 FULL
+# 2011-09-29 22:53:50 -0400 LULL
+# 2011-09-29 22:54:04 -0400 @CULL
+game.play("kjs@scheibo.com", "CULL")
+game.play("SimpleBot", "HULL")
+game.play("SimpleBot", "MULL")
+game.play("SimpleBot", "MILL")
+# 2011-09-29 22:54:04 -0400 HULL
+# 2011-09-29 22:54:04 -0400 MULL
+# 2011-09-29 22:54:04 -0400 MILL
+# 2011-09-29 22:54:08 -0400 @KILL
+game.play("kjs@scheibo.com", "KILL")
+game.play("SimpleBot", "NILL")
+game.play("SimpleBot", "NIL")
+game.play("SimpleBot", "NIM")
+# 2011-09-29 22:54:08 -0400 NILL
+# 2011-09-29 22:54:08 -0400 NIL
+# 2011-09-29 22:54:08 -0400 NIM
+# 2011-09-29 22:54:14 -0400 @NUM
+game.play("kjs@scheibo.com", "NUM")
+# 2011-09-29 22:54:14 -0400 Move is invalid.
+# 2011-09-29 22:54:31 -0400 @NIX
+game.play("kjs@scheibo.com", "NIX")
+game.play("SimpleBot", "NIT")
+game.play("SimpleBot", "NUT")
+game.play("SimpleBot", "NUB")
+# 2011-09-29 22:54:31 -0400 NIT
+# 2011-09-29 22:54:31 -0400 NUT
+# 2011-09-29 22:54:31 -0400 NUB
+# 2011-09-29 22:55:10 -0400 @rub
+game.play("kjs@scheibo.com", "RUB")
+game.play("SimpleBot", "BUB")
+game.play("SimpleBot", "BUG")
+game.play("SimpleBot", "RUG")
+# 2011-09-29 22:55:10 -0400 BUB
+# 2011-09-29 22:55:10 -0400 BUG
+# 2011-09-29 22:55:10 -0400 RUG
+# 2011-09-29 22:55:12 -0400 @tug
+game.play("kjs@scheibo.com", "TUG")
+game.play("SimpleBot", "MUG")
+game.play("SimpleBot", "MUD")
+game.play("SimpleBot", "MED")
+# 2011-09-29 22:55:12 -0400 MUG
+# 2011-09-29 22:55:12 -0400 MUD
+# 2011-09-29 22:55:12 -0400 MED
+# 2011-09-29 22:55:16 -0400 @mad
+game.play("kjs@scheibo.com", "MAD")
+game.play("SimpleBot", "MID")
+game.play("SimpleBot", "MIG")
+game.play("SimpleBot", "MIM")
+# 2011-09-29 22:55:16 -0400 MID
+# 2011-09-29 22:55:16 -0400 MIG
+# 2011-09-29 22:55:16 -0400 MIM
+# 2011-09-29 22:55:22 -0400 ?mim
+# 2011-09-29 22:55:22 -0400 Primly demure
+# 2011-09-29 22:55:29 -0400 @vim
+game.play("kjs@scheibo.com", "VIM")
+game.play("SimpleBot", "VUM")
+game.play("SimpleBot", "GUM")
+game.play("SimpleBot", "BUM")
+# 2011-09-29 22:55:29 -0400 VUM
+# 2011-09-29 22:55:29 -0400 GUM
+# 2011-09-29 22:55:29 -0400 BUM
+# 2011-09-29 22:55:30 -0400 ?vim
+# 2011-09-29 22:55:30 -0400 Energy
+# 2011-09-29 22:55:36 -0400 @BUT
+game.play("kjs@scheibo.com", "BUT")
+game.play("SimpleBot", "BUY")
+game.play("SimpleBot", "BUR")
+game.play("SimpleBot", "PUR")
+# 2011-09-29 22:55:36 -0400 BUY
+# 2011-09-29 22:55:36 -0400 BUR
+# 2011-09-29 22:55:36 -0400 PUR
+# 2011-09-29 22:55:45 -0400 @PURE
+game.play("kjs@scheibo.com", "PURE")
+game.play("SimpleBot", "PURSE")
+game.play("SimpleBot", "PURGE")
+game.play("SimpleBot", "URGE")
+# 2011-09-29 22:55:45 -0400 PURSE
+# 2011-09-29 22:55:45 -0400 PURGE
+# 2011-09-29 22:55:45 -0400 URGE
+# 2011-09-29 22:55:58 -0400 @surge
+game.play("kjs@scheibo.com", "SURGE")
+game.play("SimpleBot", "GURGE")
+game.play("SimpleBot", "GURGLE")
+game.play("SimpleBot", "BURGLE")
+# 2011-09-29 22:55:58 -0400 GURGE
+# 2011-09-29 22:55:58 -0400 GURGLE
+# 2011-09-29 22:55:58 -0400 BURGLE
+# 2011-09-29 22:56:04 -0400 ?burgle
+# 2011-09-29 22:56:04 -0400 To commit burglary
+# 2011-09-29 22:56:20 -0400 @BUNGLE
+game.play("kjs@scheibo.com", "BUNGLE")
+game.play("SimpleBot", "PUNGLE")
+game.play("SimpleBot", "JUNGLE")
+game.play("SimpleBot", "JUNGLY")
+# 2011-09-29 22:56:20 -0400 PUNGLE
+# 2011-09-29 22:56:20 -0400 JUNGLE
+# 2011-09-29 22:56:20 -0400 JUNGLY
+# 2011-09-29 22:56:32 -0400 @JANGLY
+game.play("kjs@scheibo.com", "JANGLY")
+game.play("SimpleBot", "JINGLY")
+game.play("SimpleBot", "KINGLY")
+game.play("SimpleBot", "KINDLY")
+# 2011-09-29 22:56:32 -0400 JINGLY
+# 2011-09-29 22:56:32 -0400 KINGLY
+# 2011-09-29 22:56:32 -0400 KINDLY
+# 2011-09-29 22:56:45 -0400 @KINDLE
+game.play("kjs@scheibo.com", "KINDLE")
+game.play("SimpleBot", "DINDLE")
+game.play("SimpleBot", "WINDLE")
+game.play("SimpleBot", "BINDLE")
+# 2011-09-29 22:56:45 -0400 DINDLE
+# 2011-09-29 22:56:45 -0400 WINDLE
+# 2011-09-29 22:56:45 -0400 BINDLE
+# 2011-09-29 22:56:54 -0400 ?bindle
+# 2011-09-29 22:56:54 -0400 A bundle
+# 2011-09-29 22:57:07 -0400 @brindle
+game.play("kjs@scheibo.com", "BRINDLE")
+game.play("SimpleBot", "BRIDLE")
+game.play("SimpleBot", "BRIDE")
+game.play("SimpleBot", "BORIDE")
+# 2011-09-29 22:57:07 -0400 BRIDLE
+# 2011-09-29 22:57:07 -0400 BRIDE
+# 2011-09-29 22:57:07 -0400 BORIDE
+# 2011-09-29 22:57:18 -0400 ?boride
+# 2011-09-29 22:57:18 -0400 A boron compound
+# 2011-09-29 22:57:24 -0400 @BOLIDE
+game.play("kjs@scheibo.com", "BOLIDE")
+# 2011-09-29 22:57:24 -0400 Player 1 (kjs@scheibo.com) wins.
+# 2011-09-29 22:57:31 -0400 !hsitory
+# 2011-09-29 22:57:36 -0400 !history
+# 2011-09-29 22:57:36 -0400 DAT -> WAT -> WAW -> RAW -> RAT -> GAT -> GIT -> GID -> BID -> VID -> DID -> DIE -> TIE -> THE -> THO -> RHO -> MHO -> MOO -> MON -> FON -> FUN -> FUD -> FUB -> CUB -> DUB -> PUB -> PUL -> GUL -> GULL -> BULL -> FULL -> LULL -> CULL -> HULL -> MULL -> MILL -> KILL -> NILL -> NIL -> NIM -> NIX -> NIT -> NUT -> NUB -> RUB -> BUB -> BUG -> RUG -> TUG -> MUG -> MUD -> MED -> MAD -> MID -> MIG -> MIM -> VIM -> VUM -> GUM -> BUM -> BUT -> BUY -> BUR -> PUR -> PURE -> PURSE -> PURGE -> URGE -> SURGE -> GURGE -> GURGLE -> BURGLE -> BUNGLE -> PUNGLE -> JUNGLE -> JUNGLY -> JANGLY -> JINGLY -> KINGLY -> KINDLY -> KINDLE -> DINDLE -> WINDLE -> BINDLE -> BRINDLE -> BRIDLE -> BRIDE -> BORIDE -> BOLIDE
+# 2011-09-29 22:58:48 -0400 ?bolid
+# 2011-09-29 22:58:48 -0400 Not a word.
+# 2011-09-29 22:58:51 -0400 ?bolide
+# 2011-09-29 22:58:51 -0400 An exploding meteor
