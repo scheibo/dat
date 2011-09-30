@@ -272,6 +272,8 @@ void Init_logic(void) {
   rb_const_set(cLogic, rb_intern("WEIGHT_THRESHOLD"), WEIGHT_THRESHOLD);
   rb_const_set(cLogic, rb_intern("NUM_CHARS"), NUM_CHARS);
 
+  rb_define_attr(cLogic, "min_size", 1, 0);
+
   rb_define_method(cLogic, "initialize", init, -1);
   rb_define_method(cLogic, "perturb", perturb, -1);
   rb_define_private_method(cLogic, "perturb_impl", perturb_impl, 1);

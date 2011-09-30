@@ -7,6 +7,8 @@ module Dat
       WEIGHT_THRESHOLD = 0.7
       NUM_CHARS = 4
 
+      attr_reader :min_size
+
       def initialize(dict, opt={})
         @dict = dict
 

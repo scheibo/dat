@@ -1,0 +1,85 @@
+#!/usr/bin/env ruby
+$:.unshift('/Users/scheibo/Code/src/dat/lib/')
+require 'dat'
+game = Dat::LogGame.new({:start_word=>"DAT", :players=>["daphernee22@gmail.com", "SimpleBot-2260732100"]})
+game.play("SimpleBot-2260732100", "DAM")
+# 2011-09-30 15:35:42 -0400 DAM
+# 2011-09-30 15:35:46 -0400 @bam
+game.play("daphernee22@gmail.com", "BAM")
+game.play("SimpleBot-2260732100", "BAH")
+# 2011-09-30 15:35:46 -0400 BAH
+# 2011-09-30 15:35:50 -0400 @gah
+game.play("daphernee22@gmail.com", "GAH")
+# 2011-09-30 15:35:50 -0400 'GAH' is not a word.
+# 2011-09-30 15:35:58 -0400 @bat
+game.play("daphernee22@gmail.com", "BAT")
+game.play("SimpleBot-2260732100", "CAT")
+# 2011-09-30 15:35:58 -0400 CAT
+# 2011-09-30 15:36:09 -0400 @cath
+game.play("daphernee22@gmail.com", "CATH")
+# 2011-09-30 15:36:09 -0400 'CATH' is not a word.
+# 2011-09-30 15:37:41 -0400 @cut
+game.play("daphernee22@gmail.com", "CUT")
+game.play("SimpleBot-2260732100", "TUT")
+# 2011-09-30 15:37:41 -0400 TUT
+# 2011-09-30 15:39:49 -0400 @tat
+game.play("daphernee22@gmail.com", "TAT")
+game.play("SimpleBot-2260732100", "TAX")
+# 2011-09-30 15:39:49 -0400 TAX
+# 2011-09-30 15:39:52 -0400 @lax
+game.play("daphernee22@gmail.com", "LAX")
+game.play("SimpleBot-2260732100", "FAX")
+# 2011-09-30 15:39:52 -0400 FAX
+# 2011-09-30 15:39:58 -0400 @fag
+game.play("daphernee22@gmail.com", "FAG")
+game.play("SimpleBot-2260732100", "YAG")
+# 2011-09-30 15:39:58 -0400 YAG
+# 2011-09-30 15:40:02 -0400 ?yag
+# 2011-09-30 15:40:02 -0400 A synthetic garnet
+# 2011-09-30 15:40:17 -0400 ?!
+# 2011-09-30 15:40:17 -0400 A synthetic garnet
+# 2011-09-30 15:40:27 -0400 @sup
+game.play("daphernee22@gmail.com", "SUP")
+# 2011-09-30 15:40:27 -0400 'SUP' must be within one edit distance of 'YAG'
+# 2011-09-30 15:40:39 -0400 @bag
+game.play("daphernee22@gmail.com", "BAG")
+game.play("SimpleBot-2260732100", "BAR")
+# 2011-09-30 15:40:39 -0400 BAR
+# 2011-09-30 15:40:43 -0400 @barn
+game.play("daphernee22@gmail.com", "BARN")
+game.play("SimpleBot-2260732100", "BARE")
+# 2011-09-30 15:40:43 -0400 BARE
+# 2011-09-30 15:40:49 -0400 @hare
+game.play("daphernee22@gmail.com", "HARE")
+game.play("SimpleBot-2260732100", "HERE")
+# 2011-09-30 15:40:49 -0400 HERE
+# 2011-09-30 15:40:55 -0400 @her
+game.play("daphernee22@gmail.com", "HER")
+game.play("SimpleBot-2260732100", "HEY")
+# 2011-09-30 15:40:55 -0400 HEY
+# 2011-09-30 15:41:04 -0400 @hay
+game.play("daphernee22@gmail.com", "HAY")
+game.play("SimpleBot-2260732100", "HAJ")
+# 2011-09-30 15:41:04 -0400 HAJ
+# 2011-09-30 15:41:08 -0400 ?haj
+# 2011-09-30 15:41:08 -0400 Hadj
+# 2011-09-30 15:41:14 -0400 ?hadj
+# 2011-09-30 15:41:14 -0400 A pilgrimage to mecca
+# 2011-09-30 15:41:21 -0400 @hadj
+game.play("daphernee22@gmail.com", "HADJ")
+game.play("SimpleBot-2260732100", "HADE")
+# 2011-09-30 15:41:21 -0400 HADE
+# 2011-09-30 15:41:48 -0400 ?!
+# 2011-09-30 15:41:48 -0400 To incline
+# 2011-09-30 15:41:55 -0400 @have
+game.play("daphernee22@gmail.com", "HAVE")
+game.play("SimpleBot-2260732100", "HAE")
+# 2011-09-30 15:41:55 -0400 HAE
+# 2011-09-30 15:41:58 -0400 ?hae
+# 2011-09-30 15:41:58 -0400 To have
+# 2011-09-30 15:42:08 -0400 @ae
+game.play("daphernee22@gmail.com", "AE")
+# 2011-09-30 15:42:08 -0400 Player 1 (daphernee22@gmail.com) wins.
+# 2011-09-30 15:42:16 -0400 ?rae
+# 2011-09-30 15:42:16 -0400 Not a word.
+# 2011-09-30 15:43:03 -0400 @dat

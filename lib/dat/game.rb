@@ -20,7 +20,7 @@ module Dat
       @logger = logger
       printable_opt = opt.clone
       printable_opt[:players] = printable_opt[:players].map(&:to_s)
-      @logger.log("game = Dat::Game.new(Dat::Logger.new.create(0), #{printable_opt})", true)
+      @logger.log("game = Dat::LogGame.new(#{printable_opt})", true)
 
       if !opt[:players] || opt[:players].size < MIN_PLAYERS
         raise InvalidGame, "Not enough players in the game."
@@ -37,6 +37,7 @@ module Dat
 
       @dict = opt[:dict] || Dict.new
       @logic = Dat::Logic.new(@dict, opt)
+      @min_size = @logic.min_size
 
       @last = opt[:start_word] || START_WORD
       @last.upcase!
@@ -115,7 +116,7 @@ module Dat
       raise InvalidMove, "Cannot play out of turn. It is player #{@players[expected_player]}'s (#{expected_player}) move." if player != expected_player
       raise InvalidMove, "The game has already been won by #{@won}." if @won
 
-      if @dict[word] && !@used[word] && @logic.leven(word, @last) == 1
+      if word.size >= @min_size && @dict[word] && !@used[word] && @logic.leven(word, @last) == 1
         t = Time.now
         @times << ("%.1f" % (t-@start))
         @start = t
@@ -131,6 +132,8 @@ module Dat
       else
         if !@dict[word]
           raise InvalidMove, "'#{word}' is not a word."
+        elsif word.size < @min_size
+          raise InvalidMove, "'#{word}' is shorter than the minimum #{@min_size} characters."
         elsif @used[word]
           raise InvalidMove, "'#{word}' (or one of its relatives) has already been played."
         else
