@@ -9,7 +9,7 @@ begin
   g = Game.new(Logger.new(:null => true)[0], :players => ['p1', b], :dict => d)
   b.init(g)
     m = b.move
-  loop do
+  while m.size < 15 do # rough measure to check we're always iterating on words
     m = g.play('p1', g.logic.perturb(m.strip, g.used)[0].to_s)
   end
 rescue InvalidMove => e
