@@ -11,6 +11,7 @@ module Dat
 
     class Log
       def initialize(lid, opt)
+        lid = lid[0, (lid.index('/') ? lid.index('/') : lid.size)]
         @timed = opt[:timed]
         if opt[:null]
           @file = File.open('/dev/null', 'w')
