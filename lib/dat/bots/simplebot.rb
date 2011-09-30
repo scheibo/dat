@@ -8,8 +8,6 @@ module Dat
       @game.play(self, word)
       word
     rescue WinningMove => e
-      p "IN SIMPLEBOT WINNING MOVE"
-      p e.message
       word << "\n" << e.message
     end
 

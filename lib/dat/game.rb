@@ -102,7 +102,7 @@ module Dat
       next_player = whos_turn
       if next_player.respond_to?(:move)
         r << next_player.move
-        next_move!(r)
+        next_move!(r) if !@won
       end
       r.join("\n")
     end
