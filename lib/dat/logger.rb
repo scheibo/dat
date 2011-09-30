@@ -9,15 +9,17 @@ module Dat
       @logs[lid] ||= Logger::Log.new(lid, @opt)
     end
 
+    def create(lid)
+      @logs[lid] = Logger::Log.new(lid, @opt)
+    end
+
     class Log
       def initialize(lid, opt)
-        lid = lid.to_s
-        lid = lid[0, (lid.index('/') ? lid.index('/') : lid.size)]
         @timed = opt[:timed]
         if opt[:null]
           @file = File.open('/dev/null', 'w')
         elsif opt[:path]
-          @file = File.open("#{opt[:path]}/dat-#{lid}-#{Time.now.to_i}.log", "a")
+          @file = File.open("#{opt[:path]}/dat-#{lid.to_s.gsub('/','|')}-#{Time.now.to_i}.log", "a")
         else
           @file = $stdout
         end

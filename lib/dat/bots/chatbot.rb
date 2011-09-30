@@ -21,13 +21,15 @@ module Dat
 
       @client.add_message_callback do |m|
         if m.type != :error && !m.composing? && !m.body.to_s.strip.empty?
-          @logger[m.from.bare].log(m.body)
-          response = @interface.respond(m.from.bare, m.body).to_s.strip
+          body = m.body.to_s
+          from = m.from.bare.to_s
+          @logger[from].log(body)
+          response = @interface.respond(from, body).to_s.strip
           if !response.empty?
-            msg = Jabber::Message.new(m.from.bare, response)
+            msg = Jabber::Message.new(from, response)
             msg.set_type(:chat)
             @client.send(msg)
-            @logger[m.from.bare].log(response)
+            @logger[from].log(response)
           end
         end
       end

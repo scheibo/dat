@@ -16,6 +16,12 @@ module Dat
       @logger = logger
     end
 
+    def check!(gid)
+      if @games[gid] && @games[gid].won
+        raise NoGameError, "Game has been won."
+      end
+    end
+
     def [](gid)
       @games.fetch(gid)
     rescue KeyError
@@ -25,7 +31,7 @@ module Dat
     def add(gid, opt={})
       opt.merge(:dict => @dict)
 
-      game = Game.new(@logger[gid],  opt)
+      game = Game.new(@logger.create(gid),  opt)
 
       opt[:players].each do |p|
         if p.respond_to?(:bot?) && p.bot?

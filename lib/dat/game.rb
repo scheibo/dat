@@ -13,14 +13,14 @@ module Dat
     START_WORD = 'DAT'
     MIN_PLAYERS = 2
 
-    attr_reader :played, :used, :dict, :logic, :last, :min_size
+    attr_reader :played, :used, :dict, :logic, :last, :min_size, :won
     alias history played
 
     def initialize(logger, opt={})
       @logger = logger
       printable_opt = opt.clone
       printable_opt[:players] = printable_opt[:players].map(&:to_s)
-      @logger.log("game = Dat::Game.new(Dat::Logger.new[0], #{printable_opt})", true)
+      @logger.log("game = Dat::Game.new(Dat::Logger.new.create(0), #{printable_opt})", true)
 
       if !opt[:players] || opt[:players].size < MIN_PLAYERS
         raise InvalidGame, "Not enough players in the game."
@@ -62,7 +62,7 @@ module Dat
       end
 
       msg = "Player #{idx+1} (#{player}) has forfeited."
-      msg << " Player #{@players[@won]+1} (#{@won}) wins." if @won
+      msg << " Player #{@players[@won]+1} (#{@won}) wins.\nOne word you could have played is '#{@logic.perturb(@last, @used)[0]}'." if @won
       msg
     end
 
@@ -129,7 +129,13 @@ module Dat
           raise WinningMove, "Player #{@players[@won]+1} (#{@won}) wins."
         end
       else
-        raise InvalidMove, "Move is invalid."
+        if !@dict[word]
+          raise InvalidMove, "'#{word}' is not a word."
+        elsif @used[word]
+          raise InvalidMove, "'#{word}' (or one of its relatives) has already been played."
+        else
+          raise InvalidMove, "'#{word}' must be within one edit distance of '#{@last}'"
+        end
       end
     end
 
