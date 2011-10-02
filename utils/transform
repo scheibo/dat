@@ -134,5 +134,5 @@ transform File.open('../data/orig/owl2-lwl.txt'), File.open('../data/individuals
 transform File.open('../data/orig/oswi.txt'), File.open('../data/individuals/Toswi.txt', 'w')
 transform File.open('../data/orig/csw.txt'), File.open('../data/individuals/Tcws.txt', 'w')
 
-outfile = File.open('../data/all.txt', 'w')
+outfile = File.open('../data/orig/all.txt', 'w')
 $dict.each { |k,v| outfile.puts v.to_dict_entry }

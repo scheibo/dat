@@ -9,7 +9,7 @@ $dict = {}
 
 BRACKET_REGEX = /\[.*\]/
 CAPS_REGEX = /([A-Z]{3,})/
-PLURAL_REGEX = /pl\.\sof\s(.*)\s/
+PLURAL_REGEX = /pl\.\sof\s([a-zA-Z]*)\s/
 BAD_U_MISTAKE = /--(u[A-Z]+)\W/
 
 # helper that has a heurstic to only add the relatives if they meet a certain condition

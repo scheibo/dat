@@ -1,6 +1,7 @@
 #!/bin/bash
 
 [[ -f '../data/all.txt' ]] && sort ../data/all.txt > ../data/all2.txt && mv ../data/all2.txt ../data/all.txt
+[[ -f '../data/orig/all.txt' ]] && sort ../data/orig/all.txt > ../data/orig/all2.txt && mv ../data/orig/all2.txt ../data/orig/all.txt
 [[ -f '../data/nounreachable.txt' ]] && sort ../data/nounreachable.txt > ../data/nu.txt && mv ../data/nu.txt ../data/nounreachable.txt
 [[ -f '../data/norelativereachable.txt' ]] && sort ../data/norelativereachable.txt > ../data/nrr.txt && mv ../data/nrr.txt ../data/norelativereachable.txt
 [[ -f '../data/nocircles.txt' ]] && sort ../data/nocircles.txt > ../data/nrr.txt && mv ../data/nrr.txt ../data/nocircles.txt

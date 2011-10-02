@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'set'
+require 'dat'
+include Dat
+
+module Dat
+  class Word
+    def eql?(word)
+      word.get == @word
+    end
+    alias == eql?
+  end
+end
+
+rdict = Dict.new
+odict = Dict.new(:file => File.open('../data/orig/all.txt'))
+
+odict.each do |k,v|
+  if rdict[k]
+    relatives = v.relatives.reject {|r| !rdict[v.get] }
+    a, b = relatives.sort_by(&:get), rdict[v.get].relatives.sort_by(&:get)
+    p "#{a.size > b.size ? "****" : ""}#{k} #{a} #{b}" if a.size != b.size
+    Word.relatives(rdict[v.get], *relatives)
+  end
+end
+
+File.open('more-relatives-dict', 'w').puts rdict

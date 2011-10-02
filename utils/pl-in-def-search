@@ -1,0 +1,33 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+include Dat
+
+module Dat
+  class Word
+    def eql?
+      @word == word.get
+    end
+    alias == eql?
+
+    def hash
+      @word.hash
+    end
+  end
+end
+
+d = Dict.new
+f = File.open('plural-adjustments', 'w')
+o = File.open('possible-plurals', 'w')
+
+d.each do |k,v|
+  %w{S R ER ED ES ING LY}.each do |s|
+    w = "#{k}#{s}"
+    if d[w] && !v.relatives.include?(d[w])
+      f.puts "r #{k} #{w}"
+      o.print "#{v.to_dict_entry}\n#{d[w].to_dict_entry}\n\n"
+    end
+  end
+end
+
+

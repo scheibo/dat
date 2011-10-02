@@ -13,9 +13,15 @@ module Dat
     end
 
     def add_relative(word)
-      @relatives.add word if word.get != @word
+      @relatives.add(word) if word.get != @word && !@relatives.include?(word)
     end
     alias << add_relative
+
+    def isolate!
+      @relatives.each { |r| r.relatives.delete(self) }
+      @relatives = Set.new
+      @type = nil
+    end
 
     def to_s
       @word
