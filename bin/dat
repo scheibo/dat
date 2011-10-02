@@ -2,5 +2,6 @@
 $:.unshift(File.expand_path('../../lib', __FILE__)) unless $:.include?(File.expand_path('../../lib', __FILE__))
 require 'dat'
 
-#Process.daemon
+Process.daemon
+File.open(ARGV[0], 'w').puts(Process.pid) rescue nil
 Dat::ChatBot.new(:path => '/tmp').run

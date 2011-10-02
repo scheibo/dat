@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.rubyforge_project = "dat"
 
   s.add_dependency "xmpp4r"
+  s.add_dependency "god"
 
   s.add_development_dependency "rake"
   s.add_development_dependency "rspec"
