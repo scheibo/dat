@@ -13,6 +13,7 @@ module Dat
 
     def initialize(logger)
       @games = Games.new(logger)
+      @dict_adjustments = File.open(File.expand_path('../../../data/possible-bogus', __FILE__), 'a')
     end
 
     def help
@@ -30,6 +31,8 @@ module Dat
           recent - displays the words recently played
           history - displays the entire game history
           time - time since the last move
+
+          relative/r <word>+ - make words relative
       END
     end
 
@@ -44,12 +47,14 @@ module Dat
         when 'hard' then new_game(from, args, :delete => :false)
         when 'end', 'forfeit' then forfeit(from)
         when 'define', 'd' then dict_entry(args)
-        when 'recent', 'r' then recent(from)
+        when 'recent' then recent(from)
         when 'trecent', 'tr' then recent(from, true)
         when 'history', 'h' then history(from)
         when 'thistory', 'th' then history(from, true)
         when 'time', 't' then time(from)
         when 'used', 'u' then used(from)
+        when 'relative', 'relatives', 'r' then relatives(args)
+        when 'isolate', 'i' then isolate(msg)
         else nil
         end
       when '?' then define(msg)
@@ -63,6 +68,22 @@ module Dat
       puts $!.message
       puts $!.backtrace.join("\n")
       "<<ERROR>> y u break me, daphne? (report this bug)"
+    end
+
+    # TODO concurrent editing of dicitionary is bad
+    def relatives(args)
+      Word.relatives(args.map { |w| @games.dict[w] }.compact)
+      @dict_adjustments.puts("!r #{args}")
+      @dict_adjustments.flush
+    end
+
+    # TODO concurrent editing of dicitionary is bad
+    def isolate(word)
+      if @games.dict[word]
+        @games.dict[word].isolate!
+        @dict_adjustments.puts("!i #{msg}")
+        @dict_adjustments.flush
+      end
     end
 
     def new_game(from, args=[], opt={})
