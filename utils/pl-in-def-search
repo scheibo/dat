@@ -16,7 +16,7 @@ module Dat
   end
 end
 
-d = Dict.new
+d = Dict.new(:file => File.open('../data/nocircles.txt'))
 f = File.open('plural-adjustments', 'w')
 o = File.open('possible-plurals', 'w')
 
@@ -29,5 +29,3 @@ d.each do |k,v|
     end
   end
 end
-
-

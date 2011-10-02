@@ -54,9 +54,9 @@ module Dat
       file.each_line do |line|
         command, rest = line[0], line[2..-1].chomp
         case command
-        when 'd' then delete get(rest)
+        when 'd' then delete(get(rest))
         when 'i' then get(rest).isolate!
-        when 'r' then Word.relatives rest.split(" ").map { |w| get(w) }
+        when 'r' then Word.relatives(rest.split(" ").map { |w| @dict[w] }.compact)
         end
       end
       file.close

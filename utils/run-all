@@ -1,6 +1,6 @@
 #!/bin/bash
-./transform
+./transform-hasbro
 ./calculate-unreachable
 ./calculate-relative-unreachable
-./dump
+#./dump
 ./sortdicts

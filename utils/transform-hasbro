@@ -10,6 +10,7 @@ $dict = {}
 BRACKET_REGEX = /\[.*\]/
 CAPS_REGEX = /([A-Z]{3,})/
 PLURAL_REGEX = /pl\.\sof\s([a-zA-Z]*)\s/
+ONE_THAT_REGEX = /one\sthat\s([a-zA-Z]*)\s/
 BAD_U_MISTAKE = /--(u[A-Z]+)\W/
 
 # helper that has a heurstic to only add the relatives if they meet a certain condition
@@ -39,6 +40,7 @@ def transform(infile, outfile)
     end
 
     check_for_plurals word, defn
+    check_for_one_that word, defn
     check_for_caps word, defn
 
     if defn =~ BAD_U_MISTAKE
@@ -79,6 +81,10 @@ end
 
 def check_for_plurals(word, defn)
   relatives(g(word), g($~[1])) if defn =~ PLURAL_REGEX
+end
+
+def check_for_one_that(word, defn)
+  relatives(g(word), g($~[1])) if defn =~ ONE_THAT_REGEX
 end
 
 def check_for_caps(word, defn)

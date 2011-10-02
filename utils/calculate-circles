@@ -12,14 +12,14 @@ def relative_unreachable(infile, outfile)
 
     n2 = Set.new
     neighbors.each do |n|
-      logic.perturb(n.get).map { |e| n2.add(e) }
+      logic.perturb(n.get, :transpose => true, :min_size => 2).map { |e| n2.add(e) }
     end
 
     neighbors << v
     if n2.difference(neighbors).empty?
-      # we have a circle, remove all of the neighbours
       neighbors.each do |n|
         # TODO worry that removing stuff makes other things no longer good?
+        puts n
         dict.delete(n)
       end
     end

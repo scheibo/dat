@@ -3,17 +3,10 @@ require '../lib/dat'
 include Dat
 require 'set'
 
-set = Set.new
-w1 = Word.new("sup1", "poo def")
-w2 = Word.new("sup1", "poo def asfasfasf")
+d = Dict.new(File.open('../data/norelativereachable.txt'))
+l = Logic.new(d)
 
-set.add(w1)
-set.add(w2)
-h= {}
-h[w1] = w1
-h[w2] = w2
-p h
-p set
+l.perturb('ADVISER')
 
 __END__
 d = Dict.new
