@@ -1,12 +1,32 @@
 #!/usr/bin/env ruby
 require '../lib/dat'
 include Dat
-require 'set'
-
-d = Dict.new(File.open('../data/norelativereachable.txt'))
+require 'pp'
+d = Dict.new
 l = Logic.new(d)
+g = LogGame.new(:players => ['p1', 'p2'])
 
-l.perturb('ADVISER')
+def to_dict_entry(word, from)
+  str = "#{word.clone} {#{from}}"
+  str << (word.type ? " (" << word.type << ") " : " ")
+  str << word.definition.strip << " " unless word.definition.strip.empty?
+  str << "[#{word.relatives.to_a.join(" ")}]"
+end
+
+leaves = Leaves.new(g)
+top = leaves.get(1)
+File.open('leaves', 'w') do |f|
+  top.each do |leaf, neighbor|
+    f.puts(to_dict_entry(d[leaf], neighbor[0].get))
+  end
+end
+
+1.upto(4) do |i|
+  p leaves.get(i).size
+end
+
+
+
 
 __END__
 d = Dict.new
