@@ -44,7 +44,8 @@ module Dat
     end
 
     def update
-      @game.used.each do |u|
+      @game.last.relatives.clone.add(@game.last).each do |w|
+      #@game.used.each do |u|
         @logic.perturb(u.get, @game.used).each do |w|
           1.upto(@depth) do |i|
             @leaves[i].delete(u.get) if @leaves[i][u.get]

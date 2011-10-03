@@ -21,10 +21,12 @@ module Dat
     end
 
     def delete(word)
-      word.relatives.each do |r|
-        r.relatives.delete(word)
+      w = @dict[word]
+      return nil if !w
+      w.relatives.each do |r|
+        r.relatives.delete(w)
       end
-      @dict.delete(word.get)
+      @dict.delete(w.get)
     end
 
     def to_s
@@ -54,7 +56,7 @@ module Dat
       file.each_line do |line|
         command, rest = line[0], line[2..-1].chomp
         case command
-        when 'd' then delete(get(rest))
+        when 'd' then delete(rest)
         when 'i' then get(rest).isolate!
         when 'r' then Word.relatives(rest.split(" ").map { |w| @dict[w] }.compact)
         end
