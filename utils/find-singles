@@ -1,0 +1,18 @@
+#!/usr/bin/env ruby
+$: << File.expand_path('../../lib', __FILE__)
+require 'dat'
+include Dat
+
+
+single_adjustments = File.open('single-adjustments', 'w')
+single_explanation = File.open('single-explanation', 'w')
+
+d = Dict.new(:file => File.open('../data/nocircles.txt'))
+d.each do |k, v|
+  dfn = v.definition.gsub(/\[.*\]/, "").gsub(/\s+/, " ")
+  w = dfn.strip.upcase
+  if d[w] && w[0,2] == k[0,2]
+    single_adjustments.puts "r #{k} #{w}"
+    single_explanation.print "#{v.to_dict_entry}\n#{d[w].to_dict_entry}\n\n"
+  end
+end

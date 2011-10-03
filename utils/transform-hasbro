@@ -54,7 +54,19 @@ def transform(infile, outfile)
 
   redo_all_definitions!
 
+  check_for_singles!
+
   $dict.each { |k,v| outfile.puts v.to_dict_entry unless v.definition.empty? && v.relatives.empty? }
+end
+
+def check_for_singles!
+  $dict.each do |k,v|
+    dfn = v.definition.gsub(/\[.*\]/, "").gsub(/\s+/, " ")
+    w = dfn.strip.upcase
+    if $dict[w] && w[0,2] == k[0,2]
+      Word.relatives(v, $dict[w])
+    end
+  end
 end
 
 def redo_all_definitions!
