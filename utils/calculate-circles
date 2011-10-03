@@ -19,7 +19,6 @@ def relative_unreachable(infile, outfile)
     if n2.difference(neighbors).empty?
       neighbors.each do |n|
         # TODO worry that removing stuff makes other things no longer good?
-        puts n
         dict.delete(n)
       end
     end

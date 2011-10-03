@@ -11,7 +11,7 @@ d = Dict.new(:file => File.open('../data/nocircles.txt'))
 d.each do |k, v|
   dfn = v.definition.gsub(/\[.*\]/, "").gsub(/\s+/, " ")
   w = dfn.strip.upcase
-  if d[w] && w[0,2] == k[0,2]
+  if d[w] && w[0,2] == k[0,2] && !v.relatives.include?(d[w])
     single_adjustments.puts "r #{k} #{w}"
     single_explanation.print "#{v.to_dict_entry}\n#{d[w].to_dict_entry}\n\n"
   end
