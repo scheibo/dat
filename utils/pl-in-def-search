@@ -21,7 +21,7 @@ f = File.open('plural-adjustments', 'w')
 o = File.open('possible-plurals', 'w')
 
 d.each do |k,v|
-  %w{S R ER ED ES ING LY}.each do |s|
+  %w{S R ER ED ES ING LY Y}.each do |s|
     w = "#{k}#{s}"
     if d[w] && !v.relatives.include?(d[w])
       f.puts "r #{k} #{w}"
